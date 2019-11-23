@@ -1,7 +1,7 @@
 <?php
 
 /*
- * (c) 2018 Andrei Chirko <andchir@gmail.com>
+ * (c) 2019 Andrei Chirko <andchir@gmail.com>
  *
  * Please read the LICENSE
  */

@@ -6,6 +6,9 @@ services:
 
     Andchir\CommentsBundle\:
         resource: '../../*'
-        exclude: '{Resource}'
+        exclude: '{}'
 
-        
+    Andchir\CommentsBundle\Controller\:
+        resource: '../../Controller'
+        tags: ['controller.service_arguments']
+
