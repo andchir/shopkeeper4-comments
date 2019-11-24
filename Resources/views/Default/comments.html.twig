@@ -1,6 +1,7 @@
 <div class="card card-body">
-    <h3>Add Comment</h3>
-    <div>
-
+    <h4>{{ 'Add Comment' | trans }}</h4>
+    <div class="mb-3">
+        {% include '@Comments/Default/add_comment_form.html.twig' %}
     </div>
+
 </div>

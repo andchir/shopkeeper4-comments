@@ -6,9 +6,10 @@ services:
 
     Andchir\CommentsBundle\:
         resource: '../../*'
-        exclude: '{}'
+        exclude: '{DependencyInjection,Form,Document,Resources}'
 
-    Andchir\CommentsBundle\Controller\:
-        resource: '../../Controller'
+    comments:
+        class: Andchir\CommentsBundle\Service\CommentsManager
+        arguments: []
         tags: ['controller.service_arguments']
-
+        public: true

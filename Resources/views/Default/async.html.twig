@@ -1,0 +1,16 @@
+
+<div class="my-3 w-100" id="shk-comments"></div>
+
+<script src="{{ asset('bundles/comments/js/comments.js') }}" defer></script>
+
+<script>
+    var shkComments;
+    document.addEventListener('DOMContentLoaded', function() {
+        shkComments = new ShkComments({
+            baseUrl: '/comments',
+            threadId: '{{ id }}',
+            selector: '#shk-comments',
+            loadingClass: 'shopping-cart-loading'
+        });
+    });
+</script>

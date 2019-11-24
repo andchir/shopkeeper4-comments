@@ -9,4 +9,9 @@
 },
 ~~~
 
+Add to templates/default/content-page.html.twig:
+~~~
+{% include '@Comments/Default/async.html.twig' with {'id': currentId} only %}
+~~~
+
 

@@ -17,8 +17,12 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('shopkeeper4-comments');
+        $treeBuilder = new TreeBuilder('comments');
+
+        $treeBuilder->getRootNode()
+            ->children()
+                ->scalarNode('comment_class')->end()
+            ->end();
 
         return $treeBuilder;
     }
