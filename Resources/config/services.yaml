@@ -10,6 +10,6 @@ services:
 
     comments:
         class: Andchir\CommentsBundle\Service\CommentsManager
-        arguments: []
+        arguments: ['parameter_bag']
         tags: ['controller.service_arguments']
         public: true

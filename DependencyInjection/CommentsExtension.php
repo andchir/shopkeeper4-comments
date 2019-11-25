@@ -19,14 +19,16 @@ class CommentsExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-        $configuration = new Configuration();
-        $config = $this->processConfiguration($configuration, $configs);
-
         // Load configs
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yaml');
 
+        $configuration = new Configuration();
+        $config = $this->processConfiguration($configuration, $configs);
+
         $definition = $container->getDefinition('comments');// Get service definition
         $definition->addArgument($config);// Add config to new constructor argument
+
+        $container->setParameter('comments_config', $config);// Add config to parameters
     }
 }

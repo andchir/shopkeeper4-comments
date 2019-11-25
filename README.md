@@ -1,5 +1,14 @@
 
+## Installing
 
+Add to templates/default/content-page.html.twig:
+~~~
+{% include '@Comments/Default/async.html.twig' with {'id': currentId} only %}
+~~~
+
+### Manual installing
+
+composer.json
 ~~~
 "autoload": {
     "psr-4": {
@@ -9,9 +18,9 @@
 },
 ~~~
 
-Add to templates/default/content-page.html.twig:
+config/bundles.php
 ~~~
-{% include '@Comments/Default/async.html.twig' with {'id': currentId} only %}
+Andchir\CommentsBundle\CommentsBundle::class => ['all' => true]
 ~~~
 
 

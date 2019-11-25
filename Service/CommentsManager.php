@@ -2,14 +2,20 @@
 
 namespace Andchir\CommentsBundle\Service;
 
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+
 class CommentsManager {
 
     /** @var array */
     protected $config;
 
-    public function __construct(array $config = [])
+    public function __construct(ParameterBagInterface $params, array $config = [])
     {
-        $this->config = $config;
+        if (empty($config) && $params->has('comments_config')) {
+            $this->config = $params->get('comments_config');
+        } else {
+            $this->config = $config;
+        }
     }
 
     public function createComment()

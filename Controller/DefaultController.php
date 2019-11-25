@@ -37,7 +37,7 @@ class DefaultController extends Controller
      * @param CommentsManager $commentsManager
      * @return Response
      */
-    public function getThreadAction(Request $request, CommentsManager $commentsManager, $threadId)
+    public function getThreadAction(Request $request, $threadId)
     {
         $form = $this->createForm(AddCommentType::class);
         $form->handleRequest($request);
@@ -45,9 +45,11 @@ class DefaultController extends Controller
 
 
 
-            var_dump($this->commentsManager->getConfig(), $comment);
+            // var_dump($this->commentsManager->getConfig(), $comment);
 
         }
+
+        // var_dump($this->commentsManager->getConfig());
 
         return $this->render('@Comments/Default/comments.html.twig', [
             'form' => $form->createView()
