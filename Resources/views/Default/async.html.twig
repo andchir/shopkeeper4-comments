@@ -1,5 +1,6 @@
 
-<div class="my-3 w-100" id="shk-comments"></div>
+<div class="clearfix"></div>
+<div class="py-3" id="shk-comments"></div>
 
 <script src="{{ asset('bundles/comments/js/comments.js') }}" defer></script>
 
@@ -10,7 +11,19 @@
             baseUrl: '/comments',
             threadId: '{{ id }}',
             selector: '#shk-comments',
-            loadingClass: 'shopping-cart-loading'
+            loadingClass: 'shopping-cart-loading',
+            onAddSuccess: function(data) {
+                const messageHtml = '<div class="alert alert-info" id="shk-comments-message">{{ "Comment will be published after verification." | trans }}</div>',
+                    messageEl = document.createElement('div');
+                messageEl.innerHTML = messageHtml;
+                shkComments.getThreadHtml(function() {
+                    const formEl = shkComments.getContainer().querySelector('form');
+                    formEl.insertBefore(messageEl, formEl.firstChild);
+                    setTimeout(function() {
+                        messageEl.parentNode.removeChild(messageEl);
+                    }, 3500);
+                });
+            }
         });
     });
 </script>

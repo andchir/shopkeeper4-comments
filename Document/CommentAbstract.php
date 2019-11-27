@@ -19,6 +19,11 @@ abstract class CommentAbstract implements CommentInterface {
     /** @var \DateTime */
     protected $publishedTime;
 
+    public function __construct()
+    {
+        $this->setStatus(self::STATUS_PENDING);
+    }
+
     /**
      * @return string
      */

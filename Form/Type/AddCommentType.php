@@ -2,8 +2,10 @@
 
 namespace Andchir\CommentsBundle\Form\Type;
 
+use Andchir\CommentsBundle\Document\CommentInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -16,6 +18,11 @@ class AddCommentType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('threadId', HiddenType::class, [
+                'constraints' => new NotBlank([
+                    'message' => 'Parent ID cannot be empty.'
+                ])
+            ])
             ->add('comment', TextareaType::class, [
                 'constraints' => new Length(['min' => 3])
             ])

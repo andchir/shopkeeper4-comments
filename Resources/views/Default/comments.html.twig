@@ -1,7 +1,21 @@
 <div class="card card-body">
     <h4>{{ 'Add Comment' | trans }}</h4>
+
+    {% include 'flash_messages.html.twig' %}
+
     <div class="mb-3">
         {% include '@Comments/Default/add_comment_form.html.twig' %}
     </div>
+    {% if comments | length > 0 %}
+        <div>
+            {% for comment in comments %}
+                <div class="card card-body mb-3">
+                    {{ comment.comment }}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">{{ 'Your review will be the first.' | trans }}</div>
+    {% endif %}
 
 </div>

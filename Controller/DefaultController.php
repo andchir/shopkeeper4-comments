@@ -2,12 +2,13 @@
 
 namespace Andchir\CommentsBundle\Controller;
 
-use Andchir\CommentsBundle\Document\CommentAbstract;
+use Andchir\CommentsBundle\Document\CommentInterface;
 use Andchir\CommentsBundle\Form\Type\AddCommentType;
 use Andchir\CommentsBundle\Service\CommentsManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,58 +40,79 @@ class DefaultController extends Controller
      */
     public function getThreadAction(Request $request, $threadId)
     {
-        $form = $this->createForm(AddCommentType::class);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
+        /** @var CommentInterface $comment */
+        $comment = $this->commentsManager->createComment($threadId);
 
+        $form = $this->createForm(AddCommentType::class, $comment);
 
-
-            // var_dump($this->commentsManager->getConfig(), $comment);
-
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $comments = $this->dm
+                ->getRepository($this->commentsManager->getCommentsClassName())
+                ->findAllByThread($threadId);
+        } else {
+            $comments = $this->dm
+                ->getRepository($this->commentsManager->getCommentsClassName())
+                ->findByStatus($threadId, CommentInterface::STATUS_PUBLISHED);
         }
 
-        // var_dump($this->commentsManager->getConfig());
-
         return $this->render('@Comments/Default/comments.html.twig', [
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'comments' => $comments
         ]);
     }
 
     /**
      * @Route("/add", name="comment_add", methods={"POST"})
      * @param Request $request
-     * @param CommentsManager $commentsManager
      * @return Response
      */
-    public function addCommentAction(Request $request, CommentsManager $commentsManager)
+    public function addCommentAction(Request $request)
     {
+        /** @var CommentInterface $comment */
+        $comment = $this->commentsManager->createComment();
+        $form = $this->createForm(AddCommentType::class, $comment);
 
-        $comment = $commentsManager->createComment();
-
-        $threadId = 1;
-
-        $form = $this->createForm(AddCommentType::class);
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
-
-            $formData = $form->getData();
-            $comment = $this->container->get('comments')->createComment();
-
-            $comment
-                ->setThreadId($threadId)
-                ->setComment($formData['comment'])
-                ->setVote($formData['vote']);
-
+            $comment = $form->getData();
             $this->dm->persist($comment);
             $this->dm->flush();
 
-            var_dump($comment);
-
+            if ($request->isXmlHttpRequest()) {
+                return $this->json($comment, 200, [], [
+                    'groups' => ['details']
+                ]);
+            } else {
+                $this->addFlash('messages', 'Comment will be published after verification.');
+                return $this->redirectToRoute('comments_list', ['threadId' => $comment->getThreadId()]);
+            }
         }
 
-        return $this->render('@Comments/Default/add_comment_form.html.twig', [
-            'form' => $form->createView()
-        ]);
+        if ($request->isXmlHttpRequest()) {
+            return $this->setError([
+                'success' => $form->isSubmitted() && $form->isValid(),
+                'error' => (string) $form->getErrors(true, false),
+                'result' => $this->renderView('@Comments/Default/add_comment_form.html.twig', [
+                    'form' => $form->createView()
+                ])
+            ]);
+        } else {
+            return $this->render('@Comments/Default/add_comment_form.html.twig', [
+                'form' => $form->createView()
+            ]);
+        }
     }
 
+    /**
+     * @param $message
+     * @param int $status
+     * @return JsonResponse
+     */
+    public function setError($message, $status = Response::HTTP_UNPROCESSABLE_ENTITY)
+    {
+        $response = new JsonResponse($message);
+        $response = $response->setStatusCode($status);
+        return $response;
+    }
 }

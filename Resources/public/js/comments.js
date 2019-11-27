@@ -39,7 +39,27 @@
             baseUrl: '/',
             threadId: 0,
             selector: '#shk-comments',
-            loadingClass: 'loading'
+            loadingClass: 'loading',
+            onAddSuccess: function(data) {
+                const messageHtml = '<div class="alert alert-info" id="shk-comments-message">Comment will be published after verification.</div>',
+                    messageEl = document.createElement('div');
+                messageEl.innerHTML = messageHtml;
+                self.getThreadHtml(function() {
+                    const formEl = container.querySelector('form');
+                    formEl.insertBefore(messageEl, formEl.firstChild);
+                    setTimeout(function() {
+                        messageEl.parentNode.removeChild(messageEl);
+                    }, 3500);
+                });
+            },
+            onAddFail: function(data) {
+                if (data.result) {
+                    container.querySelector('form').outerHTML = data.result;
+                    self.formSubmitInit();
+                } else if (data.error) {
+                    alert(data.error);
+                }
+            }
         };
 
         Object.assign(mainOptions, defaultOptions, options);
@@ -53,18 +73,36 @@
             isInitialized = true;
         };
 
-        this.getThreadHtml = function() {
+        /**
+         * Get comments thread HTML
+         * @param {function} callbackFunc
+         */
+        this.getThreadHtml = function(callbackFunc) {
             self.showLoading(true);
             const url = mainOptions.baseUrl + '/' + mainOptions.threadId;
             this.ajax(url, {}, function(res) {
                 container.innerHTML = res;
                 self.formSubmitInit();
                 self.showLoading(false);
+                if (typeof callbackFunc === 'function') {
+                    callbackFunc();
+                }
             }, function() {
                 self.showLoading(false);
             });
         };
 
+        /**
+         * Get container element
+         * @returns {HTMLElement}
+         */
+        this.getContainer = function() {
+            return container;
+        };
+
+        /**
+         * Form submit initialize
+         */
         this.formSubmitInit = function() {
             if (!container) {
                 return;
@@ -76,14 +114,34 @@
             formEl.addEventListener('submit', this.onFormSubmit.bind(this));
         };
 
+        /**
+         * On form submit
+         * @param e
+         */
         this.onFormSubmit = function(e) {
             e.preventDefault();
-            console.log('onFormSubmit', e.target);
 
-            var formData = new FormData(e.target);
+            const url = mainOptions.baseUrl + '/add';
+            const formData = new FormData(e.target);
+            const buttonEl = container.querySelector('button[type="submit"]');
+            if (buttonEl) {
+                buttonEl.disabled = true;
+            }
 
-            console.log(formData);
-
+            self.showLoading(true);
+            this.ajax(url, formData, function(res) {
+                self.showLoading(false);
+                mainOptions.onAddSuccess(res);
+                if (buttonEl) {
+                    buttonEl.disabled = false;
+                }
+            }, function(err) {
+                self.showLoading(false);
+                mainOptions.onAddFail(err);
+                if (buttonEl) {
+                    buttonEl.disabled = false;
+                }
+            }, 'POST');
         };
 
         /**
@@ -147,6 +205,10 @@
             }
         };
 
+        /**
+         * Run callback after DOM ready
+         * @param cb
+         */
         this.onReady = function(cb) {
             if (document.readyState !== 'loading') {
                 cb();

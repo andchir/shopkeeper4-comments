@@ -1,0 +1,10 @@
+<?php
+
+namespace App\Repository;
+
+use Andchir\CommentsBundle\Repository\CommentRepositoryAbstract;
+
+class CommentRepository extends CommentRepositoryAbstract
+{
+
+}

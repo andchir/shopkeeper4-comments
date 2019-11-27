@@ -18,17 +18,34 @@ class CommentsManager {
         }
     }
 
-    public function createComment()
+    /**
+     * @param int $threadId
+     * @return mixed
+     */
+    public function createComment($threadId = '')
     {
         $className = $this->config['comment_class'] ?? '';
         if (!$className) {
             return null;
         }
-        return new $className;
+        $class = new $className;
+        $class->setThreadId($threadId);
+        return $class;
     }
 
+    /**
+     * @return array
+     */
     public function getConfig()
     {
         return $this->config;
+    }
+
+    /**
+     * @return mixed|string
+     */
+    public function getCommentsClassName()
+    {
+        return $this->config['comment_class'] ?? '';
     }
 }
