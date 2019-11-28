@@ -1,8 +1,6 @@
 <div class="card card-body">
     <h4>{{ 'Add Comment' | trans }}</h4>
 
-    {% include 'flash_messages.html.twig' %}
-
     <div class="mb-3">
         {% include '@Comments/Default/add_comment_form.html.twig' %}
     </div>
@@ -14,8 +12,8 @@
                 </div>
             {% endfor %}
         </div>
-    {% else %}
-        <div class="alert alert-info">{{ 'Your review will be the first.' | trans }}</div>
+    {% elseif is_granted('ROLE_USER') %}
+        <div class="alert alert-secondary">{{ 'Your review will be the first.' | trans }}</div>
     {% endif %}
 
 </div>

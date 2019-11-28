@@ -8,10 +8,12 @@ use Andchir\CommentsBundle\Service\CommentsManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class DefaultController
@@ -40,6 +42,7 @@ class DefaultController extends Controller
      */
     public function getThreadAction(Request $request, $threadId)
     {
+        $user = $this->getUser();
         /** @var CommentInterface $comment */
         $comment = $this->commentsManager->createComment($threadId);
 
@@ -64,9 +67,10 @@ class DefaultController extends Controller
     /**
      * @Route("/add", name="comment_add", methods={"POST"})
      * @param Request $request
+     * @param TranslatorInterface $translator
      * @return Response
      */
-    public function addCommentAction(Request $request)
+    public function addCommentAction(Request $request, TranslatorInterface $translator)
     {
         /** @var CommentInterface $comment */
         $comment = $this->commentsManager->createComment();
@@ -74,26 +78,39 @@ class DefaultController extends Controller
 
         $form->handleRequest($request);
 
+        if (!$this->isGranted('ROLE_USER')) {
+            $form->addError(new FormError($translator->trans('Only authorized users can post reviews.')));
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
             $comment = $form->getData();
+            $comment->setAuthor($this->getUser());
             $this->dm->persist($comment);
             $this->dm->flush();
 
+            $this->addFlash('messages', 'Thanks! Comment will be published after verification.');
+
             if ($request->isXmlHttpRequest()) {
-                return $this->json($comment, 200, [], [
+                return $this->json([
+                    'success' => true,
+                    'result' => $comment,
+                    'form' => $this->renderView('@Comments/Default/add_comment_form.html.twig', [
+                        // Reset form
+                        'form' => $this->createForm(AddCommentType::class, $this->commentsManager->createComment($comment->getThreadId()))->createView()
+                    ])
+                ], 200, [], [
                     'groups' => ['details']
                 ]);
             } else {
-                $this->addFlash('messages', 'Comment will be published after verification.');
                 return $this->redirectToRoute('comments_list', ['threadId' => $comment->getThreadId()]);
             }
         }
 
         if ($request->isXmlHttpRequest()) {
             return $this->setError([
-                'success' => $form->isSubmitted() && $form->isValid(),
+                'success' => false,
                 'error' => (string) $form->getErrors(true, false),
-                'result' => $this->renderView('@Comments/Default/add_comment_form.html.twig', [
+                'form' => $this->renderView('@Comments/Default/add_comment_form.html.twig', [
                     'form' => $form->createView()
                 ])
             ]);

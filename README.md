@@ -3,6 +3,13 @@
 
 Add to templates/default/content-page.html.twig:
 ~~~
+{% block stylesheets -%}
+    {{ parent() }}
+    <link href="{{ asset('bundles/comments/css/comments.css') }}" rel="stylesheet">
+{% endblock -%}
+~~~
+
+~~~
 {% include '@Comments/Default/async.html.twig' with {'id': currentId} only %}
 ~~~
 

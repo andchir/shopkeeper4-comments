@@ -13,16 +13,10 @@
             selector: '#shk-comments',
             loadingClass: 'shopping-cart-loading',
             onAddSuccess: function(data) {
-                const messageHtml = '<div class="alert alert-info" id="shk-comments-message">{{ "Comment will be published after verification." | trans }}</div>',
-                    messageEl = document.createElement('div');
-                messageEl.innerHTML = messageHtml;
-                shkComments.getThreadHtml(function() {
-                    const formEl = shkComments.getContainer().querySelector('form');
-                    formEl.insertBefore(messageEl, formEl.firstChild);
-                    setTimeout(function() {
-                        messageEl.parentNode.removeChild(messageEl);
-                    }, 3500);
-                });
+                if (data.form) {
+                    shkComments.getContainer().querySelector('form').outerHTML = data.form;
+                    shkComments.formSubmitInit();
+                }
             }
         });
     });

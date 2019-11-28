@@ -41,20 +41,14 @@
             selector: '#shk-comments',
             loadingClass: 'loading',
             onAddSuccess: function(data) {
-                const messageHtml = '<div class="alert alert-info" id="shk-comments-message">Comment will be published after verification.</div>',
-                    messageEl = document.createElement('div');
-                messageEl.innerHTML = messageHtml;
-                self.getThreadHtml(function() {
-                    const formEl = container.querySelector('form');
-                    formEl.insertBefore(messageEl, formEl.firstChild);
-                    setTimeout(function() {
-                        messageEl.parentNode.removeChild(messageEl);
-                    }, 3500);
-                });
+                if (data.form) {
+                    container.querySelector('form').outerHTML = data.form;
+                    self.formSubmitInit();
+                }
             },
             onAddFail: function(data) {
-                if (data.result) {
-                    container.querySelector('form').outerHTML = data.result;
+                if (data.form) {
+                    container.querySelector('form').outerHTML = data.form;
                     self.formSubmitInit();
                 } else if (data.error) {
                     alert(data.error);
