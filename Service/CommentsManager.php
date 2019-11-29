@@ -41,6 +41,11 @@ class CommentsManager {
         return $this->config;
     }
 
+    public function getOptionValue($key)
+    {
+        return $this->config[$key] ?? '';
+    }
+
     /**
      * @return mixed|string
      */

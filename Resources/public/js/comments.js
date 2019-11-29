@@ -37,11 +37,14 @@
 
         const defaultOptions = {
             baseUrl: '/',
+            currentUrl: '',
             threadId: 0,
             selector: '#shk-comments',
             loadingClass: 'loading',
             onAddSuccess: function(data) {
-                if (data.form) {
+                if (data.result && data.result.status === 'published') {
+                    self.getThreadHtml();
+                } else if (data.form) {
                     container.querySelector('form').outerHTML = data.form;
                     self.formSubmitInit();
                 }
@@ -74,7 +77,7 @@
         this.getThreadHtml = function(callbackFunc) {
             self.showLoading(true);
             const url = mainOptions.baseUrl + '/' + mainOptions.threadId;
-            this.ajax(url, {}, function(res) {
+            this.ajax(url, {currentUrl: mainOptions.currentUrl}, function(res) {
                 container.innerHTML = res;
                 self.formSubmitInit();
                 self.showLoading(false);
@@ -165,6 +168,9 @@
         this.ajax = function(url, data, successFn, failFn, method) {
             method = method || 'GET';
             const request = new XMLHttpRequest();
+            if (method === 'GET' && Object.keys(data).length > 0) {
+                url += (url.indexOf('?') > -1 ? '&' : '?') + this.objectToUrlParams(data);
+            }
             request.open(method, url, true);
 
             request.onload = function() {
@@ -197,6 +203,12 @@
             } else {
                 request.send();
             }
+        };
+
+        this.objectToUrlParams = function(data) {
+            return Object.keys(data).map(function(key) {
+                return key + '=' + encodeURIComponent(data[key]);
+            }).join('&');
         };
 
         /**

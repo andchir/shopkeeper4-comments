@@ -17,7 +17,7 @@ abstract class CommentRepositoryAbstract extends DocumentRepository {
             'threadId' => $threadId,
             'status' => $status
         ], [
-            'publishedTime' => 'asc'
+            'publishedTime' => 'desc'
         ]);
     }
 
@@ -30,7 +30,7 @@ abstract class CommentRepositoryAbstract extends DocumentRepository {
         return $this->findBy([
             'threadId' => $threadId
         ], [
-            'publishedTime' => 'asc'
+            'publishedTime' => 'desc'
         ]);
     }
 }

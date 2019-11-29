@@ -1,4 +1,8 @@
 
+{%
+    set currentUrl = path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params'))
+%}
+
 <div class="clearfix"></div>
 <div class="py-3" id="shk-comments"></div>
 
@@ -9,11 +13,14 @@
     document.addEventListener('DOMContentLoaded', function() {
         shkComments = new ShkComments({
             baseUrl: '/comments',
+            currentUrl: '{{ currentUrl }}',
             threadId: '{{ id }}',
             selector: '#shk-comments',
             loadingClass: 'shopping-cart-loading',
-            onAddSuccess: function(data) {
-                if (data.form) {
+            onAddSuccess: function(data) {// Optional, just a usage example
+                if (data.result && data.result.status === 'published') {
+                    shkComments.getThreadHtml();
+                } else if (data.form) {
                     shkComments.getContainer().querySelector('form').outerHTML = data.form;
                     shkComments.formSubmitInit();
                 }

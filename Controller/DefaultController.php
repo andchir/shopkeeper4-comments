@@ -58,9 +58,12 @@ class DefaultController extends Controller
                 ->findByStatus($threadId, CommentInterface::STATUS_PUBLISHED);
         }
 
+        $currentUrl = $request->get('currentUrl', '');
+
         return $this->render('@Comments/Default/comments.html.twig', [
             'form' => $form->createView(),
-            'comments' => $comments
+            'comments' => $comments,
+            'currentUrl' => $currentUrl
         ]);
     }
 
@@ -72,6 +75,8 @@ class DefaultController extends Controller
      */
     public function addCommentAction(Request $request, TranslatorInterface $translator)
     {
+        $statusDefault = $this->commentsManager->getOptionValue('status_default');
+        $referer = $request->headers->get('referer');
         /** @var CommentInterface $comment */
         $comment = $this->commentsManager->createComment();
         $form = $this->createForm(AddCommentType::class, $comment);
@@ -84,25 +89,31 @@ class DefaultController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
             $comment = $form->getData();
-            $comment->setAuthor($this->getUser());
+            $comment
+                ->setAuthor($this->getUser())
+                ->setStatus($statusDefault);
             $this->dm->persist($comment);
             $this->dm->flush();
 
-            $this->addFlash('messages', 'Thanks! Comment will be published after verification.');
+            if ($statusDefault == CommentInterface::STATUS_PENDING) {
+                $this->addFlash('messages', 'Thanks! Comment will be published after verification.');
+            } else if ($statusDefault == CommentInterface::STATUS_PUBLISHED) {
+                $this->addFlash('messages', 'Thanks! Your comment has been posted.');
+            }
 
             if ($request->isXmlHttpRequest()) {
                 return $this->json([
                     'success' => true,
                     'result' => $comment,
-                    'form' => $this->renderView('@Comments/Default/add_comment_form.html.twig', [
-                        // Reset form
-                        'form' => $this->createForm(AddCommentType::class, $this->commentsManager->createComment($comment->getThreadId()))->createView()
-                    ])
+                    'form' => $statusDefault == CommentInterface::STATUS_PENDING
+                        ? $this->renderView('@Comments/Default/add_comment_form.html.twig', [
+                            'form' => $this->createForm(AddCommentType::class, $this->commentsManager->createComment($comment->getThreadId()))->createView()
+                        ]) : ''
                 ], 200, [], [
                     'groups' => ['details']
                 ]);
             } else {
-                return $this->redirectToRoute('comments_list', ['threadId' => $comment->getThreadId()]);
+                return $this->redirect($referer);
             }
         }
 
@@ -115,10 +126,71 @@ class DefaultController extends Controller
                 ])
             ]);
         } else {
-            return $this->render('@Comments/Default/add_comment_form.html.twig', [
-                'form' => $form->createView()
-            ]);
+            return $this->redirect($referer);
         }
+    }
+
+    /**
+     * @Route("/{itemId}/update", name="comment_update", methods={"POST"})
+     * @param Request $request
+     * @param string $itemId
+     * @return Response
+     */
+    public function updateCommentAction(Request $request, $itemId)
+    {
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            if ($request->isXmlHttpRequest()) {
+                return $this->setError([
+                    'success' => false,
+                    'error' => 'Forbidden.'
+                ]);
+            } else {
+                return $this->redirectToRoute('comments_list', ['threadId' => $comment->getThreadId()]);
+            }
+        }
+
+        $referer = $request->headers->get('referer');
+        $action = $request->get('action');
+
+        $comment = $this->dm
+            ->getRepository($this->commentsManager->getCommentsClassName())
+            ->findOneBy([
+                'id' => (int) $itemId
+            ]);
+        if (!$comment) {
+            $this->addFlash('errors', 'No comment found.');
+            return $this->redirect($referer);
+        }
+
+        switch ($action) {
+            case 'publish':
+
+                $comment
+                    ->setStatus(CommentInterface::STATUS_PUBLISHED)
+                    ->setPublishedTime(new \DateTime());
+                $this->dm->flush();
+                $this->addFlash('messages', 'Comment successfully posted.');
+
+                break;
+            case 'hide':
+
+                $comment
+                    ->setStatus(CommentInterface::STATUS_PENDING)
+                    ->setPublishedTime(new \DateTime());
+                $this->dm->flush();
+                $this->addFlash('messages', 'Comment successfully hidden.');
+
+                break;
+            case 'delete':
+
+                $this->dm->remove($comment);
+                $this->dm->flush();
+                $this->addFlash('messages', 'Comment deleted successfully.');
+
+                break;
+        }
+
+        return $this->redirect($referer);
     }
 
     /**

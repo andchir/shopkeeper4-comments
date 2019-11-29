@@ -28,15 +28,17 @@ class AddCommentType extends AbstractType
             ])
             ->add('vote', ChoiceType::class, [
                 'choices'  => [
-                    '1' => 1,
-                    '2' => 2,
-                    '3' => 3,
+                    '5' => 5,
                     '4' => 4,
-                    '5' => 5
+                    '3' => 3,
+                    '2' => 2,
+                    '1' => 1
                 ],
                 'multiple' => false,
                 'expanded' => true,
-                'data' => 5
+                'constraints' => new NotBlank([
+                    'message' => 'Please rate.'
+                ])
             ]);
     }
 

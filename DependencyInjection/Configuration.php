@@ -22,6 +22,7 @@ class Configuration implements ConfigurationInterface
         $treeBuilder->getRootNode()
             ->children()
                 ->scalarNode('comment_class')->end()
+                ->scalarNode('status_default')->end()
             ->end();
 
         return $treeBuilder;
