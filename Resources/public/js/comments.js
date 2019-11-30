@@ -80,6 +80,7 @@
             this.ajax(url, {currentUrl: mainOptions.currentUrl}, function(res) {
                 container.innerHTML = res;
                 self.formSubmitInit();
+                self.commentsActionInit();
                 self.showLoading(false);
                 if (typeof callbackFunc === 'function') {
                     callbackFunc();
@@ -109,6 +110,40 @@
                 return;
             }
             formEl.addEventListener('submit', this.onFormSubmit.bind(this));
+        };
+
+        this.commentsActionInit = function() {
+            if (!document.getElementById('comments-list')) {
+                return;
+            }
+            let actionValue = '', itemId = '';
+
+            const forms = document.getElementById('comments-list').querySelectorAll('form');
+            Array.from(forms).forEach(function(formEl) {
+
+                const buttons = formEl.querySelectorAll('button[type="submit"]');
+                Array.from(buttons).forEach(function(buttonEl) {
+                    buttonEl.addEventListener('click', function(e) {
+                        actionValue = e.target.value;
+                        itemId = e.target.dataset.id;
+                    });
+                });
+
+                formEl.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    if (actionValue === 'delete') {
+                        self.ajaxDelete(mainOptions.baseUrl + '/' + itemId, function() {
+                            self.getThreadHtml();
+                        });
+                        return;
+                    }
+                    self.ajaxPatch(mainOptions.baseUrl + '/' + itemId, {
+                        status: actionValue === 'publish' ? 'published' : 'pending'
+                    }, function() {
+                        self.getThreadHtml();
+                    });
+                });
+            });
         };
 
         /**
@@ -158,6 +193,44 @@
         };
 
         /**
+         * Delete request
+         * @param {string} actionUrl
+         */
+        this.ajaxDelete = function(actionUrl, callbackFunc) {
+            self.showLoading(true);
+            self.ajax(actionUrl, {}, function (res) {
+                if (typeof callbackFunc === 'function') {
+                    callbackFunc(res);
+                }
+            }, function(err) {
+                if (err.error) {
+                    alert(err.error);
+                }
+                self.showLoading(false);
+            }, 'DELETE');
+        };
+
+        /**
+         * Patch request
+         * @param {string} actionUrl
+         * @param {object} data
+         * @param {function} callbackFunc
+         */
+        this.ajaxPatch = function(actionUrl, data, callbackFunc) {
+            self.showLoading(true);
+            self.ajax(actionUrl, data, function (res) {
+                if (typeof callbackFunc === 'function') {
+                    callbackFunc(res);
+                }
+            }, function(err) {
+                if (err.error) {
+                    alert(err.error);
+                }
+                self.showLoading(false);
+            }, 'PATCH');
+        };
+
+        /**
          * Ajax request
          * @param {string} url
          * @param {object} data
@@ -167,17 +240,17 @@
          */
         this.ajax = function(url, data, successFn, failFn, method) {
             method = method || 'GET';
-            const request = new XMLHttpRequest();
+            const xhr = new XMLHttpRequest();
             if (method === 'GET' && Object.keys(data).length > 0) {
                 url += (url.indexOf('?') > -1 ? '&' : '?') + this.objectToUrlParams(data);
             }
-            request.open(method, url, true);
+            xhr.open(method, url, true);
 
-            request.onload = function() {
-                const result = ['{','['].indexOf(request.responseText.substr(0,1)) > -1
-                    ? JSON.parse(request.responseText)
-                    : request.responseText;
-                if (request.status >= 200 && request.status < 400) {
+            xhr.onload = function() {
+                const result = ['{','['].indexOf(xhr.responseText.substr(0,1)) > -1
+                    ? JSON.parse(xhr.responseText)
+                    : xhr.responseText;
+                if (xhr.status >= 200 && xhr.status < 400) {
                     if (typeof successFn === 'function') {
                         successFn(result);
                     }
@@ -188,20 +261,25 @@
                 }
             };
 
-            request.onerror = function() {
+            xhr.onerror = function() {
                 if (typeof failFn === 'function') {
-                    failFn(request);
+                    failFn(xhr);
                 }
             };
 
-            request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
             if (!(data instanceof FormData)) {
                 // request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
             }
-            if (method === 'POST') {
-                request.send(data);
+            if (['POST', 'PATCH', 'PUT'].indexOf(method) > -1) {
+                if (data instanceof FormData) {
+                    xhr.send(data);
+                } else {
+                    xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+                    xhr.send(JSON.stringify(data));
+                }
             } else {
-                request.send();
+                xhr.send();
             }
         };
 

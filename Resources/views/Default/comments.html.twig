@@ -2,39 +2,41 @@
 {% include '@Comments/Default/add_comment_form.html.twig' %}
 
 {% if comments | length > 0 %}
-    {% for comment in comments %}
-        <div class="card position-relative{% if loop.last %} mb-0{% else %} mb-3{% endif %}{% if comment.status != 'published' %} bg-light text-muted{% endif %}">
-            <div class="card-body">
-                <div>
-                    {{ comment.comment }}
-                </div>
-                {% if is_granted('ROLE_ADMIN') %}
-                    <div class="float-right">
-                        <form action="{{ path('comment_update', {itemId: comment.id}) }}" method="post">
-                            {% if comment.status == 'published' %}
-                                <button type="submit" class="btn btn-secondary btn-sm px-1 py-0 small" name="action" value="hide">
-                                    {{ 'Hide' | trans }}
-                                </button>
-                            {% else %}
-                                <button type="submit" class="btn btn-secondary btn-sm px-1 py-0 small" name="action" value="publish">
-                                    {{ 'Publish' | trans }}
-                                </button>
-                            {% endif %}
-                            <button type="submit" class="btn btn-danger btn-sm px-1 py-0 small" name="action" value="delete">
-                                {{ 'Delete' | trans }}
-                            </button>
-                        </form>
+    <div id="comments-list">
+        {% for comment in comments %}
+            <div class="card position-relative{% if loop.last %} mb-0{% else %} mb-3{% endif %}{% if comment.status != 'published' %} bg-light text-muted{% endif %}">
+                <div class="card-body">
+                    <div>
+                        {{ comment.comment | nl2br }}
                     </div>
-                {% endif %}
-                <div class="text-muted small">
-                    {{ comment.publishedTime | date('d.m.Y H:i:s', 'Europe/Moscow') }}
-                </div>
-                <div class="position-absolute" style="right: 10px; top: 2px;">
-                    <span class="star-rating-value{{ comment.vote }}"></span>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <div class="float-right">
+                            <form action="{{ path('comment_update', {itemId: comment.id}) }}" method="post">
+                                {% if comment.status == 'published' %}
+                                    <button type="submit" class="btn btn-secondary btn-sm px-1 py-0 small" name="action" value="hide" data-id="{{ comment.id }}">
+                                        {{ 'Hide' | trans }}
+                                    </button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-secondary btn-sm px-1 py-0 small" name="action" value="publish" data-id="{{ comment.id }}">
+                                        {{ 'Publish' | trans }}
+                                    </button>
+                                {% endif %}
+                                <button type="submit" class="btn btn-danger btn-sm px-1 py-0 small" name="action" value="delete" data-id="{{ comment.id }}">
+                                    {{ 'Delete' | trans }}
+                                </button>
+                            </form>
+                        </div>
+                    {% endif %}
+                    <div class="text-muted small pt-2">
+                        {{ comment.publishedTime | date('d.m.Y H:i:s', 'Europe/Moscow') }}
+                    </div>
+                    <div class="position-absolute" style="right: 10px; top: 2px;">
+                        <span class="star-rating-value{{ comment.vote }}{% if comment.status != 'published' %} text-muted{% endif %}"></span>
+                    </div>
                 </div>
             </div>
-        </div>
-    {% endfor %}
+        {% endfor %}
+    </div>
 {% elseif is_granted('ROLE_USER') %}
     <div class="alert alert-secondary">{{ 'Your review will be the first.' | trans }}</div>
 {% endif %}

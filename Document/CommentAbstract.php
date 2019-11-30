@@ -155,4 +155,16 @@ abstract class CommentAbstract implements CommentInterface {
         $this->createdTime = new \DateTime();
         $this->publishedTime = new \DateTime();
     }
+
+    /**
+     * @param array $data
+     */
+    public function fromArray($data)
+    {
+        foreach ($data as $key => $value) {
+            if (method_exists($this,'set' . strtolower($key))) {
+                call_user_func(array($this, 'set' . strtolower($key)), $value);
+            }
+        }
+    }
 }

@@ -37,12 +37,11 @@ class DefaultController extends Controller
     /**
      * @Route("/{threadId}", name="comments_list", methods={"GET"})
      * @param Request $request
-     * @param CommentsManager $commentsManager
+     * @param string $threadId
      * @return Response
      */
     public function getThreadAction(Request $request, $threadId)
     {
-        $user = $this->getUser();
         /** @var CommentInterface $comment */
         $comment = $this->commentsManager->createComment($threadId);
 
@@ -138,6 +137,15 @@ class DefaultController extends Controller
      */
     public function updateCommentAction(Request $request, $itemId)
     {
+        $action = $request->get('action');
+        if (!$action && $request->getContent()) {
+            $requestContent = json_decode($request->getContent(), true);
+            if (isset($requestContent['action'])) {
+                $action = $requestContent['action'];
+            }
+        }
+        $referer = $request->headers->get('referer') . '#comments';
+
         if (!$this->isGranted('ROLE_ADMIN')) {
             if ($request->isXmlHttpRequest()) {
                 return $this->setError([
@@ -145,12 +153,9 @@ class DefaultController extends Controller
                     'error' => 'Forbidden.'
                 ]);
             } else {
-                return $this->redirectToRoute('comments_list', ['threadId' => $comment->getThreadId()]);
+                return $this->redirect($referer);
             }
         }
-
-        $referer = $request->headers->get('referer');
-        $action = $request->get('action');
 
         $comment = $this->dm
             ->getRepository($this->commentsManager->getCommentsClassName())
@@ -159,7 +164,11 @@ class DefaultController extends Controller
             ]);
         if (!$comment) {
             $this->addFlash('errors', 'No comment found.');
-            return $this->redirect($referer);
+            if ($request->isXmlHttpRequest()) {
+                return $this->setError('No comment found.');
+            } else {
+                return $this->redirect($referer);
+            }
         }
 
         switch ($action) {
@@ -190,7 +199,81 @@ class DefaultController extends Controller
                 break;
         }
 
-        return $this->redirect($referer);
+        if ($request->isXmlHttpRequest()) {
+            return $this->json([
+                'success' => true
+            ]);
+        } else {
+            return $this->redirect($referer);
+        }
+    }
+
+    /**
+     * @Route("/{itemId}", name="comment_delete", methods={"DELETE"})
+     * @param string $itemId
+     * @return Response
+     */
+    public function deleteCommentAction($itemId)
+    {
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            return $this->setError([
+                'success' => false,
+                'error' => 'Forbidden.'
+            ]);
+        }
+        $comment = $this->dm
+            ->getRepository($this->commentsManager->getCommentsClassName())
+            ->findOneBy([
+                'id' => (int) $itemId
+            ]);
+        if (!$comment) {
+            return $this->setError('No comment found.');
+        }
+
+        $this->dm->remove($comment);
+        $this->dm->flush();
+
+        return $this->json([
+            'success' => true
+        ]);
+    }
+
+    /**
+     * @Route("/{itemId}", name="comment_patch", methods={"PATCH"})
+     * @param Request $request
+     * @param string $itemId
+     * @return Response
+     */
+    public function patchCommentAction(Request $request, $itemId)
+    {
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            return $this->setError([
+                'success' => false,
+                'error' => 'Forbidden.'
+            ]);
+        }
+        $comment = $this->dm
+            ->getRepository($this->commentsManager->getCommentsClassName())
+            ->findOneBy([
+                'id' => (int) $itemId
+            ]);
+        if (!$comment) {
+            return $this->setError('No comment found.');
+        }
+        $requestContent = json_decode($request->getContent(), true);
+
+        if (!empty($requestContent)) {
+            $comment->fromArray($requestContent);
+            if (isset($requestContent['status'])
+                && $requestContent['status'] === CommentInterface::STATUS_PUBLISHED) {
+                    $comment->setPublishedTime(new \DateTime());
+            }
+            $this->dm->flush();
+        }
+
+        return $this->json([
+            'success' => true
+        ]);
     }
 
     /**
