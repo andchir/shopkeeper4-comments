@@ -190,6 +190,17 @@ class DefaultController extends Controller
                 $this->addFlash('messages', 'Comment successfully hidden.');
 
                 break;
+            case 'reply':
+
+                $replyContent = $request->get('reply', '');
+                if (empty($replyContent) && isset($requestContent, $requestContent['reply'])) {
+                    $replyContent = $requestContent['reply'];
+                }
+                $comment->setReply($replyContent);
+                $this->dm->flush();
+                $this->addFlash('messages', 'Answer updated successfully.');
+
+                break;
             case 'delete':
 
                 $this->dm->remove($comment);

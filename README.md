@@ -10,7 +10,7 @@ Add to templates/default/content-page.html.twig:
 ~~~
 
 ~~~
-{% include '@Comments/Default/async.html.twig' with {'id': currentId} only %}
+{% include '@Comments/Default/async.html.twig' with {'threadId': currentCategory.contentTypeName ~ '_' ~ currentId} only %}
 ~~~
 
 ### Manual installing

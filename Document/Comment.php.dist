@@ -31,6 +31,12 @@ class Comment extends CommentAbstract {
      */
     protected $comment;
     /**
+     * @MongoDB\Field(type="string")
+     * @Groups({"details", "list"})
+     * @var string
+     */
+    protected $reply;
+    /**
      * @MongoDB\Field(type="int")
      * @Groups({"details", "list"})
      * @var int

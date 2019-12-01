@@ -8,6 +8,8 @@ abstract class CommentAbstract implements CommentInterface {
     protected $threadId;
     /** @var string */
     protected $comment;
+    /** @var string */
+    protected $reply;
     /** @var int */
     protected $vote;
     /** @var string */
@@ -57,6 +59,24 @@ abstract class CommentAbstract implements CommentInterface {
     public function setComment($comment)
     {
         $this->comment = $comment;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getReply()
+    {
+        return $this->reply;
+    }
+
+    /**
+     * @param $reply
+     * @return $this
+     */
+    public function setReply($reply)
+    {
+        $this->reply = $reply;
         return $this;
     }
 

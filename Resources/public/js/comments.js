@@ -41,6 +41,8 @@
             threadId: 0,
             selector: '#shk-comments',
             loadingClass: 'loading',
+            replyFormContainerSelector: '.comment-reply-form-container',
+            replyContainerSelector: '.comment-reply-container',
             onAddSuccess: function(data) {
                 if (data.result && data.result.status === 'published') {
                     self.getThreadHtml();
@@ -112,6 +114,9 @@
             formEl.addEventListener('submit', this.onFormSubmit.bind(this));
         };
 
+        /**
+         * Comments buttons initialize
+         */
         this.commentsActionInit = function() {
             if (!document.getElementById('comments-list')) {
                 return;
@@ -121,6 +126,7 @@
             const forms = document.getElementById('comments-list').querySelectorAll('form');
             Array.from(forms).forEach(function(formEl) {
 
+                // Action buttons
                 const buttons = formEl.querySelectorAll('button[type="submit"]');
                 Array.from(buttons).forEach(function(buttonEl) {
                     buttonEl.addEventListener('click', function(e) {
@@ -129,6 +135,20 @@
                     });
                 });
 
+                // Reply button
+                const buttonReplyEl = formEl.querySelector('button[name="reply_toggle"]');
+                if (buttonReplyEl) {
+                    buttonReplyEl.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const isVisible = formEl.querySelector(mainOptions.replyFormContainerSelector).style.display !== 'none';
+                        formEl.querySelector(mainOptions.replyFormContainerSelector).style.display = isVisible ? 'none' : 'block';
+                        if (formEl.parentNode.querySelector(mainOptions.replyContainerSelector)) {
+                            formEl.parentNode.querySelector(mainOptions.replyContainerSelector).style.display = isVisible ? 'block' : 'none';
+                        }
+                    });
+                }
+
+                // Form submit
                 formEl.addEventListener('submit', function(e) {
                     e.preventDefault();
                     if (actionValue === 'delete') {
@@ -137,9 +157,14 @@
                         });
                         return;
                     }
-                    self.ajaxPatch(mainOptions.baseUrl + '/' + itemId, {
-                        status: actionValue === 'publish' ? 'published' : 'pending'
-                    }, function() {
+                    const data = {};
+                    if (['hide', 'publish'].indexOf(actionValue) > -1) {
+                        data.status = actionValue === 'publish' ? 'published' : 'pending';
+                    }
+                    if (actionValue === 'reply') {
+                        data.reply = formEl.reply.value;
+                    }
+                    self.ajaxPatch(mainOptions.baseUrl + '/' + itemId, data, function() {
                         self.getThreadHtml();
                     });
                 });
@@ -195,6 +220,7 @@
         /**
          * Delete request
          * @param {string} actionUrl
+         * @param {function} callbackFunc
          */
         this.ajaxDelete = function(actionUrl, callbackFunc) {
             self.showLoading(true);
