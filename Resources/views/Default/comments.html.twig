@@ -19,7 +19,7 @@
                         <div class="clearfix"></div>
                         <form action="{{ path('comment_update', {itemId: comment.id}) }}" method="post">
                             <div class="position-relative">
-                                <div class="position-absolute text-right pb-2" style="bottom: 0; right: 0;">
+                                <div class="position-absolute text-right" style="bottom: 0; right: 0;">
                                     {% if comment.status == 'published' %}
                                         <button type="submit" class="btn btn-secondary btn-sm px-1 py-0 small" name="action" value="hide" data-id="{{ comment.id }}">
                                             {{ 'Hide' | trans }}
