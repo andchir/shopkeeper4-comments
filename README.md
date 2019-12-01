@@ -4,6 +4,12 @@
 
 ## Installing
 
+Create classes for your entities or use these examples:
+~~~
+vendor/andchir/shopkeeper4-comments/Document/Comment.php.dist
+vendor/andchir/shopkeeper4-comments/Repository/CommentRepository.php.dist
+~~~
+
 Add to templates/default/content-page.html.twig:
 ~~~
 {% block stylesheets -%}
