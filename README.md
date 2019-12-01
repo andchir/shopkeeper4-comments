@@ -1,3 +1,6 @@
+# Reviews and ratings for Symfony4
+
+![Comments - screenshot #1](https://github.com/andchir/shopkeeper4-comments/blob/master/Resources/docs/screenshots/screenshot001.png?raw=true "Comments - screenshot #1")
 
 ## Installing
 
