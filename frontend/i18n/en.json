@@ -1,0 +1,14 @@
+{
+  "COMMENTS": "Reviews",
+  "THREAD_ID": "Parent ID",
+  "VOTE": "Rating",
+  "STATUS": "Status",
+  "CREATED_TIME": "Creation time",
+  "PUBLISHED_TIME": "Post time",
+  "PENDING": "Pending",
+  "PUBLISHED": "Published",
+  "DELETED": "Deleted",
+  "REPLY": "Reply",
+  "PUBLISH": "Publish",
+  "HIDE": "Hide"
+}

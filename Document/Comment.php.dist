@@ -66,6 +66,11 @@ class Comment extends CommentAbstract {
      * @var \DateTime
      */
     protected $publishedTime;
+    /**
+     * @Groups({"details", "list"})
+     * @var boolean
+     */
+    protected $isActive;
 
     /**
      * @return int

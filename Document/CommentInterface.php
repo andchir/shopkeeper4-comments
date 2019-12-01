@@ -36,6 +36,8 @@ interface CommentInterface {
 
     public function setPublishedTime($publishedTime);
 
+    public function getIsActive();
+
     public function prePersist();
 
 }

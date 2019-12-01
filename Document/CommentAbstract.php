@@ -20,6 +20,7 @@ abstract class CommentAbstract implements CommentInterface {
     protected $createdTime;
     /** @var \DateTime */
     protected $publishedTime;
+    protected $isActive;
 
     public function __construct()
     {
@@ -174,6 +175,28 @@ abstract class CommentAbstract implements CommentInterface {
     {
         $this->createdTime = new \DateTime();
         $this->publishedTime = new \DateTime();
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsActive()
+    {
+        return $this->getStatus() === CommentInterface::STATUS_PUBLISHED;
+    }
+
+    /**
+     * @param boolean $isActive
+     * @return $this
+     */
+    public function setIsActive($isActive)
+    {
+        if ($isActive) {
+            $this->setStatus(CommentInterface::STATUS_PUBLISHED);
+        } else {
+            $this->setStatus(CommentInterface::STATUS_PENDING);
+        }
+        return $this;
     }
 
     /**

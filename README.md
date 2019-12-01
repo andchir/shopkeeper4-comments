@@ -22,6 +22,13 @@ Add to templates/default/content-page.html.twig:
 {% include '@Comments/Default/async.html.twig' with {'threadId': currentCategory.contentTypeName ~ '_' ~ currentId} only %}
 ~~~
 
+### Installing component for Shopkeeper4
+
+Add to config/resources/admin_menu.yaml
+~~~
+- { title: 'COMMENTS', route: '/module/comments', icon: 'icon-message-circle' }
+~~~
+
 ### Manual installing
 
 composer.json

@@ -8,6 +8,10 @@ services:
         resource: '../../*'
         exclude: '{DependencyInjection,Form,Document,Resources}'
 
+    Andchir\CommentsBundle\Controller\:
+        resource: '../../Controller'
+        tags: ['controller.service_arguments']
+
     comments:
         class: Andchir\CommentsBundle\Service\CommentsManager
         arguments: ['parameter_bag']
