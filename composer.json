@@ -2,7 +2,7 @@
   "name": "andchir/shopkeeper4-comments",
   "description": "Comments for Shopkeeper4",
   "type": "library",
-  "license": "",
+  "license": "MIT",
   "authors": [
     {
       "name": "andchir",
