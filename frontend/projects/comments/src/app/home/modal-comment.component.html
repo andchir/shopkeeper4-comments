@@ -11,6 +11,14 @@
 
     <div class="modal-body py-0" [class.loading]="loading">
 
+        <div class="alert alert-secondary" *ngIf="model.author">
+            {{ 'AUTHOR' | translate }}:
+            <a href="{{ baseUrl }}admin/#/users/{{ model.author.email }}">
+                <i class="icon-user"></i>
+                {{ model.author.email }}
+            </a>
+        </div>
+
         <div class="row">
             <div class="col-6 col-lg-4">
                 <div class="form-group form-group-message">
@@ -98,11 +106,6 @@
 
     </div>
     <div class="modal-footer d-block">
-        <div class="float-right" *ngIf="allowImpersonation">
-            <a class="btn btn-primary" href="{{baseUrl}}?_switch_user={{model.email}}">
-                <span>{{'IMPERSONATION' | translate}}</span>
-            </a>
-        </div>
         <div class="btn-group mr-1">
             <button type="button" class="btn btn-success btn-wide" [disabled]="submitted" (click)="save(true, $event)">
                 <span>{{'SAVE_AND_CLOSE' | translate}}</span>

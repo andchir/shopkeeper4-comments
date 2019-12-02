@@ -26,4 +26,6 @@
 .star-rating-value4:before { content: '\e901 \e901 \e901 \e901'; }
 .star-rating-value5:before { content: '\e901 \e901 \e901 \e901 \e901'; }
 
+/* comments */
+#shk-comments { min-height: 150px; }
 .comment-unpublished { opacity: 0.7; background-color: #e8e9ec; }

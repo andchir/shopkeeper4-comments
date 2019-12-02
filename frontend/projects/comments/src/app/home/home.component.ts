@@ -62,7 +62,7 @@ export class HomeComponent extends PageTableAbstractComponent<Comment> {
         },
         {
             name: 'isActive',
-            sortName: '',
+            sortName: 'status',
             title: 'STATUS',
             outputType: 'boolean',
             outputProperties: {}
@@ -73,8 +73,7 @@ export class HomeComponent extends PageTableAbstractComponent<Comment> {
         public dataService: CommentsService,
         public activeModal: NgbActiveModal,
         public modalService: NgbModal,
-        public translateService: TranslateService,
-        private messageService: MessageService
+        public translateService: TranslateService
     ) {
         super(dataService, activeModal, modalService, translateService);
     }

@@ -5,8 +5,8 @@ import {NgbActiveModal, NgbTooltipConfig} from '@ng-bootstrap/ng-bootstrap';
 import {TranslateService} from '@ngx-translate/core';
 
 import {FormFieldsOptions} from '@app/models/form-fields-options.interface';
-import {SystemNameService} from '@app/services/system-name.service';
 import {AppModalContentAbstractComponent} from '@app/components/app-modal-content.abstract';
+import {AppSettings} from '@app/services/app-settings.service';
 import {CommentsService} from '../services/comments.service';
 import {Comment} from '../models/comment.model';
 
@@ -17,7 +17,8 @@ import {Comment} from '../models/comment.model';
 })
 export class ModalCommentComponent extends AppModalContentAbstractComponent<Comment> {
 
-    model = new Comment(0);
+    model = new Comment(0, '');
+    baseUrl = '';
 
     formFields: FormFieldsOptions[] = [
         {
@@ -50,9 +51,11 @@ export class ModalCommentComponent extends AppModalContentAbstractComponent<Comm
         public fb: FormBuilder,
         public activeModal: NgbActiveModal,
         public translateService: TranslateService,
-        public dataService: CommentsService
+        public dataService: CommentsService,
+        private appSettings: AppSettings
     ) {
         super(fb, activeModal, translateService, dataService);
+        this.baseUrl = `${this.appSettings.settings.webApiUrl}/`;
     }
 
 }

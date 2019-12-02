@@ -46,4 +46,18 @@ config/bundles.php
 Andchir\CommentsBundle\CommentsBundle::class => ['all' => true]
 ~~~
 
+### Development
 
+Build for development mode:
+~~~
+ng build comments --baseHref="/admin/module/comments/" \
+--deployUrl="/bundles/comments/admin/bundle-dev/" \
+--outputPath="../public/bundles/comments/admin/bundle-dev" --watch=true
+~~~
+
+Build for production:
+~~~
+ng build comments --prod --baseHref="/admin/module/comments/" \
+--deployUrl="/bundles/comments/admin/bundle/" \
+--outputPath="../public/bundles/comments/admin/bundle"
+~~~
