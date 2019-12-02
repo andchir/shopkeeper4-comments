@@ -2,6 +2,8 @@
 
 ![Comments - screenshot #1](https://github.com/andchir/shopkeeper4-comments/blob/master/Resources/docs/screenshots/screenshot001.png?raw=true "Comments - screenshot #1")
 
+Can use in Shopkeeper4 and in other applications using Symfony 4.
+
 ## Installing
 
 Create classes for your entities or use these examples:
