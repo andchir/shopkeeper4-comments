@@ -1,6 +1,6 @@
 {
   "name": "andchir/shopkeeper4-comments",
-  "description": "Comments for Shopkeeper4",
+  "description": "Reviews and ratings for Symfony4",
   "type": "library",
   "license": "MIT",
   "authors": [
