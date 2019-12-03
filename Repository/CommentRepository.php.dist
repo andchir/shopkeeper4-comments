@@ -2,26 +2,11 @@
 
 namespace App\Repository;
 
-use Andchir\CommentsBundle\Repository\CommentAdminRepositoryAbstract;
-use Doctrine\ODM\MongoDB\Query\Builder;
+// use Andchir\CommentsBundle\Repository\CommentAdminRepositoryAbstract; // For Shopkeeper4
+use Andchir\CommentsBundle\Repository\CommentRepositoryAbstract;
 
-class CommentRepository extends CommentAdminRepositoryAbstract
+// class CommentRepository extends CommentAdminRepositoryAbstract // For Shopkeeper4
+class CommentRepository extends CommentRepositoryAbstract
 {
-
-    /**
-     * @param Builder $query
-     * @param $searchWord
-     */
-    public function addSearchQuery(&$query, $searchWord)
-    {
-        if (!$searchWord) {
-            return;
-        }
-        $query->addOr(
-            $query->expr()
-                ->addOr($query->expr()->field('comment')->equals(new \MongoDB\BSON\Regex("{$searchWord}", "i")))
-                ->addOr($query->expr()->field('reply')->equals(new \MongoDB\BSON\Regex("{$searchWord}", "i")))
-        );
-    }
 
 }
