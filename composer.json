@@ -17,6 +17,6 @@
       }
   },
   "require": {
-
+    "doctrine/mongodb-odm-bundle": "^4.0"
   }
 }

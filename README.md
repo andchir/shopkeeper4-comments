@@ -2,7 +2,7 @@
 
 ![Comments - screenshot #1](https://github.com/andchir/shopkeeper4-comments/blob/master/Resources/docs/screenshots/screenshot001.png?raw=true "Comments - screenshot #1")
 
-Can be used in Shopkeeper4 and in other applications using Symfony 4.
+Can be used in Shopkeeper4 and in other applications using Symfony 4. Used DoctrineMongoDBBundle 4+.
 
 ## Installing
 

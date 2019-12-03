@@ -7,7 +7,6 @@ use Andchir\CommentsBundle\Form\Type\AddCommentType;
 use Andchir\CommentsBundle\Service\CommentsManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,7 +20,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  *
  * @Route("/comments")
  */
-class DefaultController extends Controller
+class DefaultController extends AbstractController
 {
     /** @var CommentsManager */
     protected $commentsManager;
