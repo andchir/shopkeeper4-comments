@@ -11,6 +11,11 @@
       "email": "andchir@gmail.com"
     }
   ],
+  "autoload": {
+      "psr-4": {
+          "Andchir\\CommentsBundle\\": ""
+      }
+  },
   "require": {
 
   }
