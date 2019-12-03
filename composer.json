@@ -3,7 +3,6 @@
   "type": "symfony-bundle",
   "description": "Reviews and ratings for Symfony4",
   "keywords": ["symfony4", "symfony-bundle", "comments", "raiting", "reviews", "shopkeeper4"],
-  "type": "library",
   "license": "MIT",
   "homepage": "http://modx-shopkeeper.ru/",
   "authors": [
