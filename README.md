@@ -6,7 +6,12 @@ Can be used in Shopkeeper4 and in other applications using Symfony 4.
 
 ## Installing
 
-Create classes for your entities or use these examples:
+~~~
+composer require andchir/shopkeeper4-comments
+~~~
+
+Create classes for your entities using ``Andchir\CommentsBundle\Document\CommentAbstract`` and ``Andchir\CommentsBundle\Repository\CommentAdminRepositoryAbstract``
+or use these examples:
 ~~~
 vendor/andchir/shopkeeper4-comments/Document/Comment.php.dist
 vendor/andchir/shopkeeper4-comments/Repository/CommentRepository.php.dist
