@@ -17,13 +17,14 @@ vendor/andchir/shopkeeper4-comments/Document/Comment.php.dist
 vendor/andchir/shopkeeper4-comments/Repository/CommentRepository.php.dist
 ~~~
 
-Add to templates/default/content-page.html.twig:
+Add to your twig template:
 ~~~
 {% block stylesheets -%}
     {{ parent() }}
     <link href="{{ asset('bundles/comments/css/comments.css') }}" rel="stylesheet">
 {% endblock -%}
 ~~~
+Your block name may vary.
 
 ~~~
 {% include '@Comments/Default/async.html.twig' with {'threadId': currentCategory.contentTypeName ~ '_' ~ currentId} only %}
