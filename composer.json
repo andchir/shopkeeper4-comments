@@ -17,7 +17,7 @@
       }
   },
   "require": {
-    "doctrine/mongodb-odm-bundle": "^4.0",
+    "doctrine/persistence": "*",
     "symfony/translation": "*"
   }
 }

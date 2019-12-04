@@ -5,7 +5,6 @@ namespace Andchir\CommentsBundle\Controller;
 use Andchir\CommentsBundle\Document\CommentInterface;
 use Andchir\CommentsBundle\Form\Type\AddCommentType;
 use Andchir\CommentsBundle\Service\CommentsManager;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,13 +23,10 @@ class DefaultController extends AbstractController
 {
     /** @var CommentsManager */
     protected $commentsManager;
-    /** @var DocumentManager */
-    protected $dm;
 
-    public function __construct(CommentsManager $commentsManager, DocumentManager $dm)
+    public function __construct(CommentsManager $commentsManager)
     {
         $this->commentsManager = $commentsManager;
-        $this->dm = $dm;
     }
 
     /**
@@ -47,12 +43,12 @@ class DefaultController extends AbstractController
         $form = $this->createForm(AddCommentType::class, $comment);
 
         if ($this->isGranted('ROLE_ADMIN')) {
-            $comments = $this->dm
-                ->getRepository($this->commentsManager->getCommentsClassName())
+            $comments = $this->commentsManager
+                ->getRepository()
                 ->findAllByThread($threadId);
         } else {
-            $comments = $this->dm
-                ->getRepository($this->commentsManager->getCommentsClassName())
+            $comments = $this->commentsManager
+                ->getRepository()
                 ->findByStatus($threadId, CommentInterface::STATUS_PUBLISHED);
         }
 
@@ -90,8 +86,8 @@ class DefaultController extends AbstractController
             $comment
                 ->setAuthor($this->getUser())
                 ->setStatus($statusDefault);
-            $this->dm->persist($comment);
-            $this->dm->flush();
+            $this->commentsManager->getEntityManager()->persist($comment);
+            $this->commentsManager->getEntityManager()->flush();
 
             if ($statusDefault == CommentInterface::STATUS_PENDING) {
                 $this->addFlash('messages', 'Thanks! Comment will be published after verification.');
@@ -156,8 +152,8 @@ class DefaultController extends AbstractController
             }
         }
 
-        $comment = $this->dm
-            ->getRepository($this->commentsManager->getCommentsClassName())
+        $comment = $this->commentsManager
+            ->getRepository()
             ->findOneBy([
                 'id' => (int) $itemId
             ]);
@@ -176,7 +172,7 @@ class DefaultController extends AbstractController
                 $comment
                     ->setStatus(CommentInterface::STATUS_PUBLISHED)
                     ->setPublishedTime(new \DateTime());
-                $this->dm->flush();
+                $this->commentsManager->getEntityManager()->flush();
                 $this->addFlash('messages', 'Comment successfully posted.');
 
                 break;
@@ -185,7 +181,7 @@ class DefaultController extends AbstractController
                 $comment
                     ->setStatus(CommentInterface::STATUS_PENDING)
                     ->setPublishedTime(new \DateTime());
-                $this->dm->flush();
+                $this->commentsManager->getEntityManager()->flush();
                 $this->addFlash('messages', 'Comment successfully hidden.');
 
                 break;
@@ -196,14 +192,14 @@ class DefaultController extends AbstractController
                     $replyContent = $requestContent['reply'];
                 }
                 $comment->setReply($replyContent);
-                $this->dm->flush();
+                $this->commentsManager->getEntityManager()->flush();
                 $this->addFlash('messages', 'Answer updated successfully.');
 
                 break;
             case 'delete':
 
-                $this->dm->remove($comment);
-                $this->dm->flush();
+                $this->commentsManager->getEntityManager()->remove($comment);
+                $this->commentsManager->getEntityManager()->flush();
                 $this->addFlash('messages', 'Comment deleted successfully.');
 
                 break;
@@ -231,8 +227,8 @@ class DefaultController extends AbstractController
                 'error' => 'Forbidden.'
             ]);
         }
-        $comment = $this->dm
-            ->getRepository($this->commentsManager->getCommentsClassName())
+        $comment = $this->commentsManager
+            ->getRepository()
             ->findOneBy([
                 'id' => (int) $itemId
             ]);
@@ -240,8 +236,8 @@ class DefaultController extends AbstractController
             return $this->setError('No comment found.');
         }
 
-        $this->dm->remove($comment);
-        $this->dm->flush();
+        $this->commentsManager->getEntityManager()->remove($comment);
+        $this->commentsManager->getEntityManager()->flush();
 
         return $this->json([
             'success' => true
@@ -262,8 +258,8 @@ class DefaultController extends AbstractController
                 'error' => 'Forbidden.'
             ]);
         }
-        $comment = $this->dm
-            ->getRepository($this->commentsManager->getCommentsClassName())
+        $comment = $this->commentsManager
+            ->getRepository()
             ->findOneBy([
                 'id' => (int) $itemId
             ]);
@@ -278,7 +274,7 @@ class DefaultController extends AbstractController
                 && $requestContent['status'] === CommentInterface::STATUS_PUBLISHED) {
                     $comment->setPublishedTime(new \DateTime());
             }
-            $this->dm->flush();
+            $this->commentsManager->getEntityManager()->flush();
         }
 
         return $this->json([
