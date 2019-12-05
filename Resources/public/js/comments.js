@@ -136,15 +136,17 @@
                 });
 
                 // Reply button
-                const buttonReplyEl = formEl.querySelector('button[name="reply_toggle"]');
-                if (buttonReplyEl) {
-                    buttonReplyEl.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        const isVisible = formEl.querySelector(mainOptions.replyFormContainerSelector).style.display !== 'none';
-                        formEl.querySelector(mainOptions.replyFormContainerSelector).style.display = isVisible ? 'none' : 'block';
-                        if (formEl.parentNode.querySelector(mainOptions.replyContainerSelector)) {
-                            formEl.parentNode.querySelector(mainOptions.replyContainerSelector).style.display = isVisible ? 'block' : 'none';
-                        }
+                const buttonReplyEls = formEl.querySelectorAll('button[name="reply_toggle"]');
+                if (buttonReplyEls.length > 0) {
+                    Array.from(buttonReplyEls).forEach(function(buttonReplyEl) {
+                        buttonReplyEl.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            const isVisible = formEl.querySelector(mainOptions.replyFormContainerSelector).style.display !== 'none';
+                            formEl.querySelector(mainOptions.replyFormContainerSelector).style.display = isVisible ? 'none' : 'block';
+                            if (formEl.parentNode.querySelector(mainOptions.replyContainerSelector)) {
+                                formEl.parentNode.querySelector(mainOptions.replyContainerSelector).style.display = isVisible ? 'block' : 'none';
+                            }
+                        });
                     });
                 }
 

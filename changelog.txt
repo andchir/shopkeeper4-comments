@@ -1,4 +1,7 @@
 
+v1.0.8
+- Added CommentRepositoryInterface.
+
 v1.0.7
 - Added method CommentsManager::getEntityManager().
 - Removed DocumentManager from DefaultController class.

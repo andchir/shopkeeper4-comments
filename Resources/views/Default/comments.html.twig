@@ -21,18 +21,18 @@
                             <div class="position-relative">
                                 <div class="position-absolute text-right" style="bottom: 0; right: 0;">
                                     {% if comment.status == 'published' %}
-                                        <button type="submit" class="btn btn-secondary btn-sm px-1 py-0 small" name="action" value="hide" data-id="{{ comment.id }}">
+                                        <button type="submit" class="btn btn-secondary btn-sm px-1 py-0 small ml-1" name="action" value="hide" data-id="{{ comment.id }}">
                                             {{ 'Hide' | trans }}
                                         </button>
                                     {% else %}
-                                        <button type="submit" class="btn btn-secondary btn-sm px-1 py-0 small" name="action" value="publish" data-id="{{ comment.id }}">
+                                        <button type="submit" class="btn btn-secondary btn-sm px-1 py-0 small ml-1" name="action" value="publish" data-id="{{ comment.id }}">
                                             {{ 'Publish' | trans }}
                                         </button>
                                     {% endif %}
-                                    <button type="button" class="btn btn-info btn-sm px-1 py-0 small" name="reply_toggle">
+                                    <button type="button" class="btn btn-info btn-sm px-1 py-0 small ml-1" name="reply_toggle">
                                         {{ 'Reply' | trans }}
                                     </button>
-                                    <button type="submit" class="btn btn-danger btn-sm px-1 py-0 small" name="action" value="delete" data-id="{{ comment.id }}">
+                                    <button type="submit" class="btn btn-danger btn-sm px-1 py-0 small ml-1" name="action" value="delete" data-id="{{ comment.id }}">
                                         {{ 'Delete' | trans }}
                                     </button>
                                 </div>
@@ -41,8 +41,11 @@
                                 <hr class="mt-0">
                                 <textarea class="form-control w-100" rows="2" name="reply">{{ comment.reply }}</textarea>
                                 <div class="py-2 text-right">
-                                    <button type="submit" class="btn btn-secondary btn-sm px-1 py-0 small" name="action" value="reply" data-id="{{ comment.id }}">
+                                    <button type="submit" class="btn btn-primary btn-sm px-1 py-0 small" name="action" value="reply" data-id="{{ comment.id }}">
                                         {{ 'Submit' | trans }}
+                                    </button>
+                                    <button type="button" class="btn btn-secondary btn-sm px-1 py-0 small ml-1" name="reply_toggle">
+                                        {{ 'Cancel' | trans }}
                                     </button>
                                 </div>
                             </div>
