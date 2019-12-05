@@ -7,6 +7,9 @@ Can be used in Shopkeeper4 and in other applications using Symfony 4. Used Doctr
 ## Installing
 
 ~~~
+composer config extra.symfony.allow-contrib true
+~~~
+~~~
 composer require andchir/shopkeeper4-comments
 ~~~
 
