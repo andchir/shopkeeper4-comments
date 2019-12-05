@@ -10,7 +10,7 @@ Can be used in Shopkeeper4 and in other applications using Symfony 4. Used Doctr
 composer require andchir/shopkeeper4-comments
 ~~~
 
-Create classes for your entities using ``Andchir\CommentsBundle\Document\CommentAbstract`` and ``Andchir\CommentsBundle\Repository\CommentAdminRepositoryAbstract``
+Create classes for your entities using ``Andchir\CommentsBundle\Document\CommentAbstract`` and ``Andchir\CommentsBundle\Repository\CommentRepositoryInterface``
 or use these examples:
 ~~~
 vendor/andchir/shopkeeper4-comments/Document/Comment.php.dist
