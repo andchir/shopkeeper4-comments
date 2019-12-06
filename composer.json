@@ -20,5 +20,10 @@
     "doctrine/persistence": "*",
     "symfony/form":  "*",
     "symfony/translation": "*"
+  },
+  "extra": {
+      "symfony": {
+          "require": "4.3.*"
+      }
   }
 }
