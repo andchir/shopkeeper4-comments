@@ -40,6 +40,16 @@ Add to config/resources/admin_menu.yaml
 - { title: 'COMMENTS', route: '/module/comments', icon: 'icon-message-circle' }
 ~~~
 
+Open "src/App/Repository/CommentRepository.php"
+and replace
+~~~
+class CommentRepository extends DocumentRepository implements CommentRepositoryInterface
+~~~
+to:
+~~~
+class CommentRepository extends BaseRepository implements CommentRepositoryInterface
+~~~
+
 ## Manual installing
 
 composer.json
