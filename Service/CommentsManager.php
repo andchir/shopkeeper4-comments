@@ -95,6 +95,9 @@ class CommentsManager {
             return $comment->getVote();
         }, $comments);
         
+        if (!count($ratingArr)) {
+            return 0;
+        }
         return round(array_sum($ratingArr) / count($ratingArr), 2);
     }
     

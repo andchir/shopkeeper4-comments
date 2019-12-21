@@ -82,8 +82,13 @@ class CommentsSubscriber implements EventSubscriberInterface
         $collection->updateOne(
             ['_id' => (int) $documentId],
             [
-                '$set' => [$ratingFieldName => $averageRating]
+                '$set' => [$ratingFieldName => $averageRating ?: '']
             ]
         );
+
+        /** @var EventSubscriberInterface $eventDispatcher */
+        $eventDispatcher = $this->container->get('event_dispatcher');
+        $event = new GenericEvent($document, ['contentType' => $contentType]);
+        $eventDispatcher->dispatch($event, 'product.updated');
     }
 }
