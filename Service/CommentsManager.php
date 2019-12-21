@@ -2,6 +2,7 @@
 
 namespace Andchir\CommentsBundle\Service;
 
+use Andchir\CommentsBundle\Document\CommentInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -75,7 +76,26 @@ class CommentsManager {
     /**
      * @return ObjectManager
      */
-    public function getEntityManager() {
+    public function getEntityManager()
+    {
         return $this->dm;
     }
+
+    /**
+     * @param $threadId
+     * @return float|int
+     */
+    public function getAverageRating($threadId)
+    {
+        $comments = $this->getRepository()
+            ->findByStatus($threadId, CommentInterface::STATUS_PUBLISHED);
+        
+        $ratingArr = array_map(function($comment) {
+            /** @var CommentInterface $comment */
+            return $comment->getVote();
+        }, $comments);
+        
+        return round(array_sum($ratingArr) / count($ratingArr), 2);
+    }
+    
 }

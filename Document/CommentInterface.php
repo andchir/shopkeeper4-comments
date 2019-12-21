@@ -8,6 +8,9 @@ interface CommentInterface {
     const STATUS_DELETED = 'deleted';
     const STATUS_PENDING = 'pending';
 
+    const COMMENT_BEFORE_CREATE = 'comment.before_create';
+    const COMMENT_STATUS_UPDATED = 'comment.status_update';
+
     public function getThreadId();
 
     public function setThreadId($threadId);

@@ -6,6 +6,8 @@ use Andchir\CommentsBundle\Document\CommentInterface;
 use Andchir\CommentsBundle\Form\Type\AddCommentType;
 use Andchir\CommentsBundle\Service\CommentsManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -65,9 +67,10 @@ class DefaultController extends AbstractController
      * @Route("/add", name="comment_add", methods={"POST"})
      * @param Request $request
      * @param TranslatorInterface $translator
+     * @param EventDispatcherInterface $eventDispatcher
      * @return Response
      */
-    public function addCommentAction(Request $request, TranslatorInterface $translator)
+    public function addCommentAction(Request $request, TranslatorInterface $translator, EventDispatcherInterface $eventDispatcher)
     {
         $statusDefault = $this->commentsManager->getOptionValue('status_default');
         $referer = $request->headers->get('referer');
@@ -86,8 +89,17 @@ class DefaultController extends AbstractController
             $comment
                 ->setAuthor($this->getUser())
                 ->setStatus($statusDefault);
+
+            // Dispatch event before create
+            $event = new GenericEvent($comment);
+            $comment = $eventDispatcher->dispatch($event, CommentInterface::COMMENT_BEFORE_CREATE)->getSubject();
+            
             $this->commentsManager->getEntityManager()->persist($comment);
             $this->commentsManager->getEntityManager()->flush();
+            
+            if ($comment->getIsActive()) {
+                $eventDispatcher->dispatch($event, CommentInterface::COMMENT_STATUS_UPDATED)->getSubject();
+            }
 
             if ($statusDefault == CommentInterface::STATUS_PENDING) {
                 $this->addFlash('messages', 'Thanks! Comment will be published after verification.');
@@ -128,9 +140,11 @@ class DefaultController extends AbstractController
      * @Route("/{itemId}/update", name="comment_update", methods={"POST"})
      * @param Request $request
      * @param string $itemId
+     * @param EventDispatcherInterface $eventDispatcher
      * @return Response
+     * @throws \Exception
      */
-    public function updateCommentAction(Request $request, $itemId)
+    public function updateCommentAction(Request $request, $itemId, EventDispatcherInterface $eventDispatcher)
     {
         $action = $request->get('action');
         if (!$action && $request->getContent()) {
@@ -173,6 +187,11 @@ class DefaultController extends AbstractController
                     ->setStatus(CommentInterface::STATUS_PUBLISHED)
                     ->setPublishedTime(new \DateTime());
                 $this->commentsManager->getEntityManager()->flush();
+                
+                // Dispatch event before create
+                $event = new GenericEvent($comment);
+                $eventDispatcher->dispatch($event, CommentInterface::COMMENT_STATUS_UPDATED)->getSubject();
+                
                 $this->addFlash('messages', 'Comment successfully posted.');
 
                 break;
@@ -182,6 +201,11 @@ class DefaultController extends AbstractController
                     ->setStatus(CommentInterface::STATUS_PENDING)
                     ->setPublishedTime(new \DateTime());
                 $this->commentsManager->getEntityManager()->flush();
+
+                // Dispatch event before create
+                $event = new GenericEvent($comment);
+                $eventDispatcher->dispatch($event, CommentInterface::COMMENT_STATUS_UPDATED)->getSubject();
+                
                 $this->addFlash('messages', 'Comment successfully hidden.');
 
                 break;
@@ -200,6 +224,11 @@ class DefaultController extends AbstractController
 
                 $this->commentsManager->getEntityManager()->remove($comment);
                 $this->commentsManager->getEntityManager()->flush();
+
+                // Dispatch event before create
+                $event = new GenericEvent($comment);
+                $eventDispatcher->dispatch($event, CommentInterface::COMMENT_STATUS_UPDATED)->getSubject();
+                
                 $this->addFlash('messages', 'Comment deleted successfully.');
 
                 break;
@@ -217,9 +246,10 @@ class DefaultController extends AbstractController
     /**
      * @Route("/{itemId}", name="comment_delete", methods={"DELETE"})
      * @param string $itemId
+     * @param EventDispatcherInterface $eventDispatcher
      * @return Response
      */
-    public function deleteCommentAction($itemId)
+    public function deleteCommentAction($itemId, EventDispatcherInterface $eventDispatcher)
     {
         if (!$this->isGranted('ROLE_ADMIN')) {
             return $this->setError([
@@ -239,6 +269,10 @@ class DefaultController extends AbstractController
         $this->commentsManager->getEntityManager()->remove($comment);
         $this->commentsManager->getEntityManager()->flush();
 
+        // Dispatch event before create
+        $event = new GenericEvent($comment);
+        $eventDispatcher->dispatch($event, CommentInterface::COMMENT_STATUS_UPDATED)->getSubject();
+
         return $this->json([
             'success' => true
         ]);
@@ -248,9 +282,11 @@ class DefaultController extends AbstractController
      * @Route("/{itemId}", name="comment_patch", methods={"PATCH"})
      * @param Request $request
      * @param string $itemId
+     * @param EventDispatcherInterface $eventDispatcher
      * @return Response
+     * @throws \Exception
      */
-    public function patchCommentAction(Request $request, $itemId)
+    public function patchCommentAction(Request $request, $itemId, EventDispatcherInterface $eventDispatcher)
     {
         if (!$this->isGranted('ROLE_ADMIN')) {
             return $this->setError([
@@ -275,6 +311,10 @@ class DefaultController extends AbstractController
                     $comment->setPublishedTime(new \DateTime());
             }
             $this->commentsManager->getEntityManager()->flush();
+
+            // Dispatch event before create
+            $event = new GenericEvent($comment);
+            $eventDispatcher->dispatch($event, CommentInterface::COMMENT_STATUS_UPDATED)->getSubject();
         }
 
         return $this->json([

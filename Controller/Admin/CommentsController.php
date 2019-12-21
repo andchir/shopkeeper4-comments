@@ -5,10 +5,12 @@ namespace Andchir\CommentsBundle\Controller\Admin;
 use Andchir\CommentsBundle\Document\CommentInterface;
 use Andchir\CommentsBundle\Repository\CommentRepositoryAbstract;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 if (class_exists('\App\Controller\Admin\StorageControllerAbstract')) {
 
@@ -33,8 +35,9 @@ if (class_exists('\App\Controller\Admin\StorageControllerAbstract')) {
 
         /**
          * @param $data
-         * @param int $itemId
+         * @param null $itemId
          * @return JsonResponse
+         * @throws \Doctrine\ODM\MongoDB\MongoDBException
          */
         public function createUpdate($data, $itemId = null)
         {
@@ -66,6 +69,12 @@ if (class_exists('\App\Controller\Admin\StorageControllerAbstract')) {
                 $dm->persist($item);
             }
             $dm->flush();
+
+            // Dispatch event before create
+            /** @var EventDispatcherInterface $eventDispatcher */
+            $eventDispatcher = $this->get('event_dispatcher');
+            $event = new GenericEvent($item);
+            $eventDispatcher->dispatch($event, CommentInterface::COMMENT_STATUS_UPDATED)->getSubject();
 
             return $this->json($item, 200, [], ['groups' => ['details']]);
         }
