@@ -4,6 +4,7 @@ namespace Andchir\CommentsBundle\EventSubscriber;
 
 use Andchir\CommentsBundle\Document\CommentInterface;
 use Andchir\CommentsBundle\Service\CommentsManager;
+use App\Events;
 use App\MainBundle\Document\ContentType;
 use App\Service\CatalogService;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -40,7 +41,8 @@ class CommentsSubscriber implements EventSubscriberInterface
     {
         return [
             CommentInterface::COMMENT_BEFORE_CREATE => 'onBeforeCreate',
-            CommentInterface::COMMENT_STATUS_UPDATED => 'onStatusUpdated'
+            CommentInterface::COMMENT_STATUS_UPDATED => 'onStatusUpdated',
+            Events::PRODUCT_DELETED => 'onDocumentDeleted'
         ];
     }
 
@@ -90,5 +92,21 @@ class CommentsSubscriber implements EventSubscriberInterface
         $eventDispatcher = $this->container->get('event_dispatcher');
         $event = new GenericEvent($document, ['contentType' => $contentType]);
         $eventDispatcher->dispatch($event, 'product.updated');
+    }
+    
+    public function onDocumentDeleted(GenericEvent $event)
+    {
+        $document = $event->getSubject();
+
+        /** @var ContentType $contentType */
+        $contentType = $event->getArgument('contentType');
+        $threadId = "{$contentType->getName()}_{$document['_id']}";
+        
+        // Delete comments
+        $comments = $this->commentsManager->getRepository()->findAllByThread($threadId);
+        foreach ($comments as $comment) {
+            $this->dm->remove($comment);
+            $this->dm->flush();
+        }
     }
 }
