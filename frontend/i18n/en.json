@@ -11,5 +11,7 @@
   "REPLY": "Reply",
   "PUBLISH": "Publish",
   "HIDE": "Hide",
-  "AUTHOR": "Author"
+  "AUTHOR": "Author",
+  "ADD_COMMENT": "Add comment",
+  "EDIT_COMMENT": "Edit comment"
 }

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit} from '@angular/core';
 import {FormBuilder, Validators} from '@angular/forms';
 
 import {NgbActiveModal, NgbTooltipConfig} from '@ng-bootstrap/ng-bootstrap';
@@ -52,10 +52,10 @@ export class ModalCommentComponent extends AppModalContentAbstractComponent<Comm
         public activeModal: NgbActiveModal,
         public translateService: TranslateService,
         public dataService: CommentsService,
+        public elRef: ElementRef,
         private appSettings: AppSettings
     ) {
-        super(fb, activeModal, translateService, dataService);
+        super(fb, activeModal, translateService, dataService, elRef);
         this.baseUrl = `${this.appSettings.settings.webApiUrl}/`;
     }
-
 }

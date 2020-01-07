@@ -82,4 +82,16 @@ export class HomeComponent extends PageTableAbstractComponent<Comment> {
         return ModalCommentComponent;
     }
 
+    getModalElementId(itemId?: number): string {
+        return ['modal', 'comment', itemId || 0].join('-');
+    }
+
+    setModalInputs(itemId?: number, isItemCopy: boolean = false, modalId = ''): void {
+        super.setModalInputs(itemId, isItemCopy, modalId);
+
+        const isEditMode = typeof itemId !== 'undefined' && !isItemCopy;
+        this.modalRef.componentInstance.modalTitle = isEditMode
+            ? `${this.getLangString('EDIT_COMMENT')} #${itemId}`
+            : this.getLangString('ADD_COMMENT');
+    }
 }
