@@ -4,13 +4,14 @@ namespace Andchir\CommentsBundle\Controller\Admin;
 
 use Andchir\CommentsBundle\Document\CommentInterface;
 use Andchir\CommentsBundle\Repository\CommentRepositoryAbstract;
+use Andchir\CommentsBundle\Service\CommentsManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 if (class_exists('\App\Controller\Admin\StorageControllerAbstract')) {
 
@@ -20,6 +21,14 @@ if (class_exists('\App\Controller\Admin\StorageControllerAbstract')) {
      */
     class CommentsController extends \App\Controller\Admin\StorageControllerAbstract {
 
+        /** @var CommentsManager */
+        protected $commentsManager;
+
+        public function __construct(CommentsManager $commentsManager)
+        {
+            $this->commentsManager = $commentsManager;
+        }
+        
         /**
          * @param $data
          * @param int $itemId
@@ -54,7 +63,7 @@ if (class_exists('\App\Controller\Admin\StorageControllerAbstract')) {
                     return $this->setError($translator->trans('Item not found.', [], 'validators'));
                 }
             } else {
-                $item = new Comment();
+                $item = $this->commentsManager->createComment();
                 $item->setAuthor($this->getUser());
             }
 

@@ -63,6 +63,9 @@ class CommentsSubscriber implements EventSubscriberInterface
         $threadId = $comment->getThreadId();
         $averageRating = $this->commentsManager->getAverageRating($threadId);
         
+        if (strpos($threadId, '_') === false) {
+            return;
+        }
         list($contentTypeName, $documentId) = explode('_', $threadId);
         
         /** @var ContentType $contentType */
