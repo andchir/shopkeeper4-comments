@@ -3,9 +3,11 @@
 namespace Andchir\CommentsBundle\Controller\Admin;
 
 use Andchir\CommentsBundle\Document\CommentInterface;
-use Andchir\CommentsBundle\Repository\CommentRepositoryAbstract;
 use Andchir\CommentsBundle\Service\CommentsManager;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\Persistence\ObjectRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,11 +23,21 @@ if (class_exists('\App\Controller\Admin\StorageControllerAbstract')) {
      */
     class CommentsController extends \App\Controller\Admin\StorageControllerAbstract {
 
+        /** @var EventDispatcherInterface */
+        protected $eventDispatcher;
         /** @var CommentsManager */
         protected $commentsManager;
 
-        public function __construct(CommentsManager $commentsManager)
+        public function __construct(
+            ParameterBagInterface $params,
+            DocumentManager $dm,
+            TranslatorInterface $translator,
+            EventDispatcherInterface $eventDispatcher,
+            CommentsManager $commentsManager
+        )
         {
+            parent::__construct($params, $dm, $translator);
+            $this->eventDispatcher = $eventDispatcher;
             $this->commentsManager = $commentsManager;
         }
         
@@ -50,17 +62,12 @@ if (class_exists('\App\Controller\Admin\StorageControllerAbstract')) {
          */
         public function createUpdate($data, $itemId = null)
         {
-            /** @var TranslatorInterface $translator */
-            $translator = $this->get('translator');
-            /** @var \Doctrine\ODM\MongoDB\DocumentManager $dm */
-            $dm = $this->get('doctrine_mongodb')->getManager();
-
             /** @var CommentInterface $item */
             if($itemId){
                 /** @var CommentInterface $item */
                 $item = $this->getRepository()->find($itemId);
                 if(!$item){
-                    return $this->setError($translator->trans('Item not found.', [], 'validators'));
+                    return $this->setError($this->translator->trans('Item not found.', [], 'validators'));
                 }
             } else {
                 $item = $this->commentsManager->createComment();
@@ -75,27 +82,23 @@ if (class_exists('\App\Controller\Admin\StorageControllerAbstract')) {
                 ->setReply($data['reply']);
 
             if (!$item->getId()) {
-                $dm->persist($item);
+                $this->dm->persist($item);
             }
-            $dm->flush();
+            $this->dm->flush();
 
             // Dispatch event before create
-            /** @var EventDispatcherInterface $eventDispatcher */
-            $eventDispatcher = $this->get('event_dispatcher');
             $event = new GenericEvent($item);
-            $eventDispatcher->dispatch($event, CommentInterface::COMMENT_STATUS_UPDATED)->getSubject();
+            $this->eventDispatcher->dispatch($event, CommentInterface::COMMENT_STATUS_UPDATED)->getSubject();
 
             return $this->json($item, 200, [], ['groups' => ['details']]);
         }
 
         /**
-         * @return CommentRepositoryAbstract
+         * @return \Andchir\CommentsBundle\Repository\CommentRepositoryInterface|ObjectRepository
          */
         public function getRepository()
         {
-            return $this->get('doctrine_mongodb')
-                ->getManager()
-                ->getRepository('App\MainBundle\Document\Comment');
+            return $this->dm->getRepository('App\MainBundle\Document\Comment');
         }
     }
 
