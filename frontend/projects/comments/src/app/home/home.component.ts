@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 
 import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {TranslateService} from '@ngx-translate/core';
-import {MessageService} from 'primeng/components/common/messageservice';
+import {MessageService} from 'primeng/api';
 
 import {PageTableAbstractComponent} from '@app/page-table.abstract';
 import {QueryOptions} from '@app/models/query-options';
