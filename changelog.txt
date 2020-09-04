@@ -1,3 +1,5 @@
+v1.0.11
+- Updated doctrine to version 2.0.
 
 v1.0.10
 - Minimize modal window in admin area.
