@@ -7,6 +7,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {FormFieldsOptions} from '@app/models/form-fields-options.interface';
 import {AppModalContentAbstractComponent} from '@app/components/app-modal-content.abstract';
 import {AppSettings} from '@app/services/app-settings.service';
+import {SystemNameService} from '@app//services/system-name.service';
 import {CommentsService} from '../services/comments.service';
 import {Comment} from '../models/comment.model';
 
@@ -51,11 +52,12 @@ export class ModalCommentComponent extends AppModalContentAbstractComponent<Comm
         public fb: FormBuilder,
         public activeModal: NgbActiveModal,
         public translateService: TranslateService,
+        public systemNameService: SystemNameService,
         public dataService: CommentsService,
         public elRef: ElementRef,
         private appSettings: AppSettings
     ) {
-        super(fb, activeModal, translateService, dataService, elRef);
+        super(fb, activeModal, translateService, systemNameService, dataService, elRef);
         this.baseUrl = `${this.appSettings.settings.webApiUrl}/`;
     }
 }
