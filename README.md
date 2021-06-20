@@ -84,7 +84,7 @@ ng build comments --baseHref="/admin/module/comments/" \
 
 Build for production:
 ~~~
-ng build comments --prod --baseHref="/admin/module/comments/" \
+ng build comments --configuration production --baseHref="/admin/module/comments/" \
 --deployUrl="/bundles/comments/admin/bundle/" \
 --outputPath="../public/bundles/comments/admin/bundle"
 ~~~
