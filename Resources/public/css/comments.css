@@ -9,7 +9,7 @@
     font-display: block;
 }
 .star-rating fieldset { border: none; display: inline-block; }
-.star-rating input { opacity: 0; top: 25px; left: 50%; margin-left: -6px; }
+.star-rating input { position: absolute; opacity: 0; top: 25px; left: 50%; margin-left: -6px; pointer-events: none; }
 .star-rating > fieldset > div { font-family: 'icomoon-comments'; display: inline-block; margin: 0; padding: 0; position: relative; }
 .star-rating > fieldset > div > label { float: right; width: 35px; padding: 0; overflow: hidden; white-space: nowrap; line-height: 1; cursor: pointer; font-size: 30px; color: #ffc107; }
 .star-rating > fieldset > div > label:before { content: '\e900  '; }
