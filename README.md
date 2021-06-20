@@ -33,7 +33,7 @@ Your block name may vary.
 {% include '@Comments/Default/async.html.twig' with {'threadId': currentCategory.contentTypeName ~ '_' ~ currentId} only %}
 ~~~
 
-## Installing component for [Shopkeeper4](https://github.com/andchir/shopkeeper4)
+## Installing component for [Shopker](https://github.com/andchir/shopker)
 
 Add to config/resources/admin_menu.yaml
 ~~~

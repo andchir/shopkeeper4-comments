@@ -40,7 +40,7 @@
             </a>
         </div>
 
-        <div class="row">
+        <div class="row mb-2">
             <div class="col-6 col-lg-4">
                 <div class="form-group form-group-message">
                     <label class="label-filled">
@@ -72,7 +72,7 @@
                     <label class="label-filled">
                         {{'STATUS' | translate}}
                     </label>
-                    <select class="custom-select"
+                    <select class="form-select"
                             formControlName="status"
                             [ngClass]="{'is-invalid': form.controls.status.touched && !form.controls.status.valid}">
                         <option value="pending">{{ 'PENDING' | translate }}</option>
@@ -86,7 +86,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row mb-2">
             <div class="col-12">
                 <div class="form-group form-group-message">
                     <label class="label-filled">
@@ -102,7 +102,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row mb-2">
             <div class="col-12">
                 <div class="form-group mb-0 form-group-message">
                     <label class="label-filled">
@@ -118,11 +118,9 @@
             </div>
         </div>
 
-        <div class="alert alert-danger mt-3 mb-0" *ngIf="errorMessage">
-            <button type="button" class="close" (click)="errorMessage = ''">
-                <span aria-hidden="true">&times;</span>
-            </button>
+        <div class="alert alert-danger alert-dismissible mt-3 mb-0" *ngIf="errorMessage">
             {{errorMessage}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" (click)="errorMessage = ''"></button>
         </div>
 
     </div>

@@ -9,6 +9,7 @@ import {
     ConfirmModalContentComponent,
     ModalConfirmTextComponent
 } from '@app/components/modal-confirm-text.component';
+import {ModalEditTextareaComponent} from '@app/components/modal-edit-textarea.component';
 import {SharedModule} from '@app/shared.module';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
@@ -25,7 +26,8 @@ import {ModalCommentComponent} from './home/modal-comment.component';
         AlertModalContentComponent,
         ConfirmModalContentComponent,
         ModalConfirmTextComponent,
-        ModalCommentComponent
+        ModalCommentComponent,
+        ModalEditTextareaComponent
     ],
     imports: [
         BrowserModule,
@@ -42,7 +44,8 @@ import {ModalCommentComponent} from './home/modal-comment.component';
         AlertModalContentComponent,
         ConfirmModalContentComponent,
         ModalConfirmTextComponent,
-        ModalCommentComponent
+        ModalCommentComponent,
+        ModalEditTextareaComponent
     ],
     providers: [],
     bootstrap: [AppComponent]
