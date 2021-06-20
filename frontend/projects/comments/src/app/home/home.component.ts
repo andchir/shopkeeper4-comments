@@ -91,7 +91,7 @@ export class HomeComponent extends PageTableAbstractComponent<Comment> {
 
         const isEditMode = typeof itemId !== 'undefined' && !isItemCopy;
         this.modalRef.componentInstance.modalTitle = isEditMode
-            ? `${this.getLangString('EDIT_COMMENT')} #${itemId}`
+            ? `${this.getLangString('COMMENT')} #${itemId}`
             : this.getLangString('ADD_COMMENT');
     }
 }
