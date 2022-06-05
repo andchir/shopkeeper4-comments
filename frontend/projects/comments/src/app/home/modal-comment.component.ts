@@ -1,63 +1,67 @@
-import {Component, ElementRef, OnInit} from '@angular/core';
-import {FormBuilder, Validators} from '@angular/forms';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 
-import {NgbActiveModal, NgbTooltipConfig} from '@ng-bootstrap/ng-bootstrap';
+import {DynamicDialogConfig, DynamicDialogRef} from 'primeng/dynamicdialog';
 import {TranslateService} from '@ngx-translate/core';
 
-import {FormFieldsOptions} from '@app/models/form-fields-options.interface';
-import {AppModalContentAbstractComponent} from '@app/components/app-modal-content.abstract';
 import {AppSettings} from '@app/services/app-settings.service';
-import {SystemNameService} from '@app//services/system-name.service';
+import {SystemNameService} from '@app/services/system-name.service';
 import {CommentsService} from '../services/comments.service';
 import {Comment} from '../models/comment.model';
+import {AppModalAbstractComponent} from '@app/components/modal.component.abstract';
 
 @Component({
     selector: 'app-modal-comment',
     templateUrl: './modal-comment.component.html',
     styles: []
 })
-export class ModalCommentComponent extends AppModalContentAbstractComponent<Comment> {
+export class ModalCommentComponent extends AppModalAbstractComponent<Comment> implements OnInit, OnDestroy {
 
     model = new Comment(0, '');
     baseUrl = '';
-
-    formFields: FormFieldsOptions[] = [
-        {
-            name: 'id',
-            validators: []
-        },
-        {
-            name: 'threadId',
-            validators: [Validators.required]
-        },
-        {
-            name: 'vote',
-            validators: [Validators.required]
-        },
-        {
-            name: 'status',
-            validators: [Validators.required]
-        },
-        {
-            name: 'comment',
-            validators: [Validators.required]
-        },
-        {
-            name: 'reply',
-            validators: []
-        }
-    ];
+    form = new FormGroup({
+        id: new FormControl('', []),
+        threadId: new FormControl('', [Validators.required]),
+        vote: new FormControl('', [Validators.required]),
+        status: new FormControl('', [Validators.required]),
+        comment: new FormControl('', [Validators.required]),
+        reply: new FormControl('', []),
+    });
+    statusesOpts: {name: string, title: string}[] = [];
 
     constructor(
-        public fb: FormBuilder,
-        public activeModal: NgbActiveModal,
-        public translateService: TranslateService,
+        public ref: DynamicDialogRef,
+        public config: DynamicDialogConfig,
         public systemNameService: SystemNameService,
         public dataService: CommentsService,
-        public elRef: ElementRef,
-        private appSettings: AppSettings
+        private appSettings: AppSettings,
+        private translateService: TranslateService,
     ) {
-        super(fb, activeModal, translateService, systemNameService, dataService, elRef);
+        super(ref, config, systemNameService, dataService);
         this.baseUrl = `${this.appSettings.settings.webApiUrl}/`;
+    }
+
+    ngOnInit(): void {
+        this.statusesOpts.push({
+            name: 'pending',
+            title: this.getLangString('PENDING')
+        });
+        this.statusesOpts.push({
+            name: 'published',
+            title: this.getLangString('PUBLISHED')
+        });
+        this.statusesOpts.push({
+            name: 'deleted',
+            title: this.getLangString('DELETED')
+        });
+        super.ngOnInit();
+    }
+
+    getLangString(value: string): string {
+        if (!this.translateService.store.translations[this.translateService.currentLang]) {
+            return value;
+        }
+        const translations = this.translateService.store.translations[this.translateService.currentLang];
+        return translations[value] || value;
     }
 }

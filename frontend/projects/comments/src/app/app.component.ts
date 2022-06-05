@@ -1,29 +1,23 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
-import {NgbTooltipConfig} from "@ng-bootstrap/ng-bootstrap";
-import {TranslateService} from "@ngx-translate/core";
+import {TranslateService} from '@ngx-translate/core';
+import {ConfirmationService, MessageService, PrimeNGConfig} from 'primeng/api';
 
-import {AppSettings} from "@app/services/app-settings.service";
+import {AppSettings} from '@app/services/app-settings.service';
+import {AppAbstractComponent} from '@app/components/app.component.abstract';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
-    styleUrls: ['./app.component.css']
+    styleUrls: ['./app.component.css'],
+    providers: [MessageService, ConfirmationService]
 })
-export class AppComponent {
-
+export class AppCommentsComponent extends AppAbstractComponent implements OnInit {
     constructor(
-        private tooltipConfig: NgbTooltipConfig,
-        private translate: TranslateService,
-        private appSettings: AppSettings
+        public translateService: TranslateService,
+        public appSettings: AppSettings,
+        public primengConfig: PrimeNGConfig
     ) {
-        this.translate.addLangs(['en', 'ru']);
-        this.translate.setDefaultLang('en');
-        this.translate.use(this.appSettings.settings.locale);
-
-        tooltipConfig.placement = 'bottom';
-        tooltipConfig.container = 'body';
-        tooltipConfig.triggers = 'hover click';
+        super(translateService, appSettings, primengConfig);
     }
-
 }

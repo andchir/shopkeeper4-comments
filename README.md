@@ -77,7 +77,8 @@ ln -s /path/to/vendor/andchir/shopkeeper4-comments/frontend/projects/comments \
 
 Build for development mode:
 ~~~
-ng build comments --baseHref="/admin/module/comments/" \
+ng build comments --optimization false --build-optimizer false --source-map true \
+--baseHref="/admin/module/comments/" \
 --deployUrl="/bundles/comments/admin/bundle-dev/" \
 --outputPath="../public/bundles/comments/admin/bundle-dev" --watch=true
 ~~~

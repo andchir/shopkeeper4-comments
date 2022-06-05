@@ -1,36 +1,24 @@
-import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {APP_BASE_HREF, CommonModule, registerLocaleData} from '@angular/common';
 
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateCustomLoader} from '@app/services/translateLoader';
 
-import {
-    AlertModalContentComponent,
-    ConfirmModalContentComponent,
-    ModalConfirmTextComponent
-} from '@app/components/modal-confirm-text.component';
-import {ModalEditTextareaComponent} from '@app/components/modal-edit-textarea.component';
 import {SharedModule} from '@app/shared.module';
 import {AppRoutingModule} from './app-routing.module';
-import {AppComponent} from './app.component';
+import {AppCommentsComponent} from './app.component';
 import {DefaultComponent} from './default/default.component';
 import {HomeComponent} from './home/home.component';
 import {ModalCommentComponent} from './home/modal-comment.component';
+import {ModalExportJsonComponent} from '@app/components/modal-export-json';
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        DefaultComponent,
-        HomeComponent,
-
-        AlertModalContentComponent,
-        ConfirmModalContentComponent,
-        ModalConfirmTextComponent,
-        ModalCommentComponent,
-        ModalEditTextareaComponent
-    ],
     imports: [
+        CommonModule,
         BrowserModule,
+        BrowserAnimationsModule,
         AppRoutingModule,
         SharedModule,
         TranslateModule.forRoot({
@@ -40,15 +28,21 @@ import {ModalCommentComponent} from './home/modal-comment.component';
             }
         })
     ],
-    entryComponents: [
-        AlertModalContentComponent,
-        ConfirmModalContentComponent,
-        ModalConfirmTextComponent,
+    declarations: [
+        AppCommentsComponent,
+        DefaultComponent,
+        HomeComponent,
         ModalCommentComponent,
-        ModalEditTextareaComponent
+        ModalExportJsonComponent
     ],
-    providers: [],
-    bootstrap: [AppComponent]
+    entryComponents: [
+        ModalCommentComponent,
+        ModalExportJsonComponent
+    ],
+    providers: [{
+        provide: APP_BASE_HREF, useValue: ''
+    }],
+    bootstrap: [AppCommentsComponent]
 })
 export class AppModule {
 }

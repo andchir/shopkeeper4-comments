@@ -1,47 +1,105 @@
 <app-comments-default>
 
-    <div class="mb-3">
-        <div class="float-md-start">
+    <p-table styleClass="p-datatable-striped"
+             [(selection)]="itemsSelected"
+             [(contextMenuSelection)]="itemSelected"
+             [contextMenu]="contextMenu"
+             [sortField]="queryOptions.sort_by"
+             [sortOrder]="queryOptions.sort_dir == 'asc' ? 1 : -1"
+             dataKey="id"
+             [lazy]="true"
+             (onLazyLoad)="getData($event)"
+             [paginator]="true"
+             [showJumpToPageDropdown]="true"
+             [value]="items"
+             [columns]="cols"
+             [rows]="queryOptions.limit"
+             [totalRecords]="itemsTotal"
+             [loading]="loading">
+        <ng-template pTemplate="caption">
+            <div class="flex md:justify-content-between flex-wrap">
+                <div class="p-input-icon-left w-full md:w-auto mb-2 md:mb-0">
+                    <i class="pi pi-search"></i>
+                    <input pInputText type="text"
+                           class="lg:w-auto w-full"
+                           (input)="onInputSearch()"
+                           [(ngModel)]="queryOptions.search_word"
+                           placeholder="{{ 'SEARCH' | translate }}...">
+                </div>
+                <div class="w-full md:w-auto">
+                    <button type="button" pButton pRipple
+                            class="ml-0 md:ml-2 w-full md:w-auto mb-2 md:mb-0"
+                            icon="pi pi-chevron-down"
+                            iconPos="left"
+                            [label]="'ACTIONS' | translate"
+                            (click)="menu.toggle($event)"></button>
 
-            <div class="form-control-search mb-2 mb-md-0" [ngClass]="{'form-control-search-clear': !!queryOptions.search_word}">
-                <input type="text" class="form-control min-width250" placeholder="{{ 'SEARCH' | translate }}..." [(ngModel)]="queryOptions.search_word" (ngModelChange)="onSearchWordUpdate()">
-                <span (click)="onSearchWordUpdate('')"></span>
-            </div>
-
-        </div>
-        <div class="float-md-end">
-
-            <div ngbDropdown class="d-block d-md-inline-block" placement="bottom-right">
-                <button class="btn btn-info d-block d-md-inline-block width-100 width-md-auto mb-2 mb-md-0" ngbDropdownToggle>
-                    <span>{{'BATCH_ACTIONS' | translate}}</span>
-                </button>
-                <div ngbDropdownMenu>
-                    <button class="dropdown-item" (click)="blockSelected()">{{'PUBLISH' | translate}} / {{'HIDE' | translate}}</button>
-                    <button class="dropdown-item" (click)="deleteSelected()">{{'DELETE' | translate}}</button>
+                    <button type="button" pButton pRipple
+                            class="p-button-success ml-0 md:ml-2 w-full md:w-auto"
+                            icon="pi pi-plus"
+                            iconPos="left"
+                            [label]="'ADD' | translate" (click)="openModal(null, $event)"></button>
                 </div>
             </div>
-            <button type="button" class="btn btn-success btn-wide d-block d-md-inline-block width-100 width-md-auto ms-md-2 mb-2 mb-md-0" (click)="modalOpen()">
-                <i class="icon-plus"></i>
-                &nbsp;
-                <span>{{'ADD' | translate}}</span>
-            </button>
-            <button type="button" class="btn btn-secondary d-block d-md-inline-block width-100 width-md-auto ms-md-2" ngbTooltip="{{'REFRESH' | translate}}" (click)="getList()">
-                <i class="icon-reload"></i>
-            </button>
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th>
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                    {{ col.header | translate }}
+                    <p-sortIcon [field]="col.field"></p-sortIcon>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item let-columns="columns">
+            <tr class="show-on-hover-parent" [pContextMenuRow]="item">
+                <td>
+                    <p-tableCheckbox [value]="item"></p-tableCheckbox>
+                </td>
+                <td *ngFor="let col of columns; let index=index">
+                    <app-render-output
+                            [value]="item[col.field]"
+                            [key]="col.field"
+                            [outputType]="col.outputType"
+                            [options]="col.outputProperties"
+                            [object]="item"
+                            (changeRequest)="onOptionUpdate($event)"></app-render-output>
 
-        </div>
-        <div class="clearfix"></div>
-    </div>
-
-    <app-table
-            [items]="items"
-            [(selectedIds)]="selectedIds"
-            [collectionSize]="collectionSize"
-            [queryOptions]="queryOptions"
-            [tableFields]="tableFields"
-            [(loading)]="loading"
-            (actionRequest)="actionRequest($event)" #table></app-table>
+                    <ng-container *ngIf="columns.length == index + 1">
+                        <div class="absolute show-on-hover pos-top15 pos-right15">
+                            <button pButton pRipple icon="pi pi-pencil"
+                                    class="p-button p-button-sm p-button-rounded p-button-info"
+                                    [pTooltip]="'EDIT' | translate"
+                                    tooltipPosition="bottom"
+                                    (click)="openModal(item)"></button>
+                            <button pButton pRipple icon="pi pi-trash"
+                                    class="p-button p-button-sm p-button-rounded p-button-danger ml-2"
+                                    [pTooltip]="'DELETE' | translate"
+                                    tooltipPosition="left"
+                                    (click)="deleteItem(item)"></button>
+                        </div>
+                    </ng-container>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+                <td [colSpan]="columns.length + 1">
+                    <ng-container *ngIf="queryOptions.search_word; else emptyMessage">
+                        {{ 'NOTHING_FOUND' | translate  }}.
+                    </ng-container>
+                    <ng-template #emptyMessage>
+                        {{ 'EMPTY' | translate }}.
+                    </ng-template>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
 
 </app-comments-default>
 
-<p-toast key="message" position="bottom-right"></p-toast>
+<p-menu #menu [popup]="true" [model]="menuItems" styleClass="p-menu-nowrap"></p-menu>
+
+<p-contextMenu #contextMenu [model]="contextMenuItems"></p-contextMenu>

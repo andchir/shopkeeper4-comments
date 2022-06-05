@@ -1,13 +1,24 @@
-<div class="p-3">
-    <div class="ps-5">
+<div class="layout-wrapper p-component">
 
-        <router-outlet></router-outlet>
+    <router-outlet></router-outlet>
 
-        <app-navbar
-                [hrefMode]="true"
-                [baseRoute]="'/module/comments'"></app-navbar>
+    <app-navbar
+            [baseRoute]="'/module/comments'"
+            (fileManagerActive)="fileManagerToggle($event)"></app-navbar>
 
-    </div>
 </div>
 
-<div id="modals-container"></div>
+<p-sidebar [(visible)]="isFileManagerActive"
+           [appendTo]="appSidebar"
+           styleClass="p-component box-shadow1"
+           [style]="sidebarStyle"
+           [position]="sidebarPosition"
+           [modal]="false"
+           (onHide)="fileManagerToggle(false)">
+    <app-file-manager [(isActive)]="isFileManagerActive"></app-file-manager>
+</p-sidebar>
+
+<p-toast position="bottom-right" key="message"></p-toast>
+<p-confirmDialog [header]="'CONFIRM' | translate" icon="pi pi-exclamation-triangle"></p-confirmDialog>
+<div id="app-modals" #appModals></div>
+<div id="app-sidebar" #appSidebar></div>

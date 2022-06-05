@@ -1,143 +1,93 @@
-<div class="position-relative modal-on-maximized">
-    <div class="tabs-top">
-        <button type="button" class="btn btn-outline-primary btn-sm d-block"
-                [disabled]="submitted"
-                (click)="closeModal($event)">
-            <i class="icon-cross me-1"></i>
-            <span>{{'CLOSE' | translate}}</span>
-        </button>
-        <button type="button" class="btn btn-outline-primary btn-sm d-block"
-                [disabled]="submitted"
-                (click)="minimize($event)">
-            <i class="icon-minimize me-1"></i>
-            <span>{{'MINIMIZE' | translate}}</span>
-        </button>
-    </div>
+<div>
+    <form [formGroup]="form" #formEl>
+
+        <div class="grid align-content-start mb-3 mt-0 border-round border-1 surface-200 border-400" *ngIf="model.author">
+            <div class="col-6">
+                {{ 'AUTHOR' | translate }}:
+            </div>
+            <div class="col-6">
+                <i class="pi pi-user mr-2"></i>
+                <a href="{{ baseUrl }}admin/#/users/{{ model.author.email }}">{{ model.author.email }}</a>
+            </div>
+        </div>
+
+        <div class="grid mb-3">
+            <div class="col-12 md:col-4">
+                <label class="block mb-2" for="fieldThreadId">
+                    {{ 'THREAD_ID' | translate }}
+                </label>
+                <input type="text" id="fieldThreadId" class="w-full mb-2" pInputText
+                       autocomplete="off"
+                       formControlName="threadId">
+            </div>
+            <div class="col-12 md:col-4">
+                <label class="block mb-2" for="fieldVote">
+                    {{ 'VOTE' | translate }}
+                </label>
+                <input type="number" id="fieldVote" class="w-full mb-2" pInputText
+                       autocomplete="off"
+                       min="1"
+                       max="5"
+                       formControlName="vote">
+            </div>
+            <div class="col-12 md:col-4">
+                <label class="block mb-2" for="fieldStatus">
+                    {{ 'STATUS' | translate }}
+                </label>
+                <p-dropdown styleClass="w-full"
+                        [options]="statusesOpts"
+                        optionLabel="title"
+                        optionValue="name"
+                        formControlName="status"></p-dropdown>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="block mb-2" for="fieldComment">
+                {{ 'COMMENT' | translate }}
+            </label>
+            <textarea [rows]="4" pInputTextarea autoResize="autoResize" id="fieldComment" class="w-full"
+                      autocomplete="off"
+                      formControlName="comment"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="block mb-2" for="fieldReply">
+                {{ 'REPLY' | translate }}
+            </label>
+            <textarea [rows]="4" pInputTextarea autoResize="autoResize" id="fieldReply" class="w-full"
+                      autocomplete="off"
+                      formControlName="reply"></textarea>
+        </div>
+
+        <div role="separator" class="p-divider p-component p-divider-horizontal p-divider-solid p-divider-left">
+            <div class="p-divider-content"></div>
+        </div>
+
+        <p-message styleClass="block w-full text-left mb-3" severity="error"
+                   [text]="errorMessage"
+                   *ngIf="errorMessage"></p-message>
+
+        <div class="grid mt-2">
+            <div class="col-12 md:col-6">
+                <button pButton pRipple type="button" [label]="'SAVE_AND_CLOSE' | translate" icon="pi pi-check"
+                        class="p-button-success p-button-raised w-full"
+                        (click)="saveData(true, $event)"></button>
+            </div>
+            <div class="col-12 md:col-3">
+                <button pButton pRipple type="button" [label]="'SAVE' | translate" icon="pi pi-check"
+                        class="p-button-warning p-button-raised w-full"
+                        (click)="saveData(false, $event)"></button>
+            </div>
+            <div class="col-12 md:col-3">
+                <button pButton pRipple type="button" [label]="'CLOSE' | translate"
+                        class="p-button-secondary p-button-raised w-full"
+                        (click)="dismissModal($event)"></button>
+            </div>
+        </div>
+    </form>
 </div>
-<div class="modal-header d-block">
-    <div class="position-relative modal-on-minimized">
-        <div class="pos-absolute-right">
-            <button type="button" class="btn btn-no-border btn-sm-sm" [title]="'EXPAND' | translate" (click)="maximize($event)">
-                <i class="icon-maximize"></i>
-            </button>
-            <button type="button" class="btn btn-no-border btn-sm-sm ms-1" [title]="'CLOSE' | translate" (click)="closeModal($event)">
-                <i class="icon-cross"></i>
-            </button>
-        </div>
-    </div>
-    <h4 class="modal-title text-overflow me-5" [title]="modalTitle">{{modalTitle}}</h4>
+
+<div class="loading-overlay" *ngIf="loading">
+    <p-progressSpinner></p-progressSpinner>
 </div>
-
-<form [formGroup]="form" method="post" (ngSubmit)="onSubmit()" [ngClass]="{'no-events': submitted}" #formEl>
-
-    <div class="modal-body py-0" [class.loading]="loading">
-
-        <div class="alert alert-secondary" *ngIf="model.author">
-            {{ 'AUTHOR' | translate }}:
-            <a href="{{ baseUrl }}admin/#/users/{{ model.author.email }}">
-                <i class="icon-user"></i>
-                {{ model.author.email }}
-            </a>
-        </div>
-
-        <div class="row mb-2">
-            <div class="col-6 col-lg-4">
-                <div class="form-group form-group-message">
-                    <label class="label-filled">
-                        {{'THREAD_ID' | translate}}
-                    </label>
-                    <input type="text" class="form-control" autocomplete="off"
-                           formControlName="threadId"
-                           [ngClass]="{'is-invalid': form.controls.threadId.touched && !form.controls.threadId.valid}">
-                    <div *ngIf="formErrors.threadId" class="alert alert-danger">
-                        {{formErrors.threadId}}
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-lg-4">
-                <div class="form-group form-group-message">
-                    <label class="label-filled">
-                        {{'VOTE' | translate}}
-                    </label>
-                    <input type="number" class="form-control" min="1" max="5" autocomplete="off"
-                           formControlName="vote"
-                           [ngClass]="{'is-invalid': form.controls.vote.touched && !form.controls.vote.valid}">
-                    <div *ngIf="formErrors.vote" class="alert alert-danger">
-                        {{formErrors.vote}}
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="form-group form-group-message">
-                    <label class="label-filled">
-                        {{'STATUS' | translate}}
-                    </label>
-                    <select class="form-select"
-                            formControlName="status"
-                            [ngClass]="{'is-invalid': form.controls.status.touched && !form.controls.status.valid}">
-                        <option value="pending">{{ 'PENDING' | translate }}</option>
-                        <option value="published">{{ 'PUBLISHED' | translate }}</option>
-                        <option value="deleted">{{ 'DELETED' | translate }}</option>
-                    </select>
-                    <div *ngIf="formErrors.status" class="alert alert-danger">
-                        {{formErrors.status}}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mb-2">
-            <div class="col-12">
-                <div class="form-group form-group-message">
-                    <label class="label-filled">
-                        {{'COMMENT' | translate}}
-                    </label>
-                    <textarea class="form-control" autocomplete="off" rows="4"
-                              formControlName="comment"
-                              [ngClass]="{'is-invalid': form.controls.comment.touched && !form.controls.comment.valid}"></textarea>
-                    <div *ngIf="formErrors.comment" class="alert alert-danger">
-                        {{formErrors.comment}}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mb-2">
-            <div class="col-12">
-                <div class="form-group mb-0 form-group-message">
-                    <label class="label-filled">
-                        {{'REPLY' | translate}}
-                    </label>
-                    <textarea class="form-control" autocomplete="off" rows="4"
-                              formControlName="reply"
-                              [ngClass]="{'is-invalid': form.controls.reply.touched && !form.controls.reply.valid}"></textarea>
-                    <div *ngIf="formErrors.reply" class="alert alert-danger">
-                        {{formErrors.reply}}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="alert alert-danger alert-dismissible mt-3 mb-0" *ngIf="errorMessage">
-            {{errorMessage}}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" (click)="errorMessage = ''"></button>
-        </div>
-
-    </div>
-    <div class="modal-footer d-block">
-        <div class="btn-group me-1">
-            <button type="button" class="btn btn-success btn-wide" [disabled]="submitted" (click)="save(true, $event)">
-                <span>{{'SAVE_AND_CLOSE' | translate}}</span>
-            </button>
-            <div class="btn-group" ngbDropdown role="group" placement="top-right">
-                <button type="button" class="btn btn-success dropdown-toggle-split" ngbDropdownToggle [disabled]="submitted"></button>
-                <div class="dropdown-menu" ngbDropdownMenu>
-                    <button type="button" ngbDropdownItem (click)="save(false, $event)">{{'SAVE' | translate}}</button>
-                </div>
-            </div>
-        </div>
-        <button type="button" class="btn btn-secondary btn-wide" (click)="closeModal($event)">
-            <span>{{'CLOSE' | translate}}</span>
-        </button>
-    </div>
-</form>

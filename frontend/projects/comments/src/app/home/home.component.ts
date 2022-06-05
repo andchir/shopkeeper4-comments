@@ -1,97 +1,58 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
-import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {TranslateService} from '@ngx-translate/core';
-import {MessageService} from 'primeng/api';
+import {ConfirmationService, MessageService} from 'primeng/api';
+import {DialogService} from 'primeng/dynamicdialog';
 
-import {PageTableAbstractComponent} from '@app/page-table.abstract';
 import {QueryOptions} from '@app/models/query-options';
 import {CommentsService} from '../services/comments.service';
 import {ModalCommentComponent} from './modal-comment.component';
+import {AppTablePageAbstractComponent} from '@app/components/table-page.components.abstract';
+import {ContentTypesService} from '@app/catalog/services/content_types.service';
+import {Comment} from '../models/comment.model';
+import {TableField} from '@app/components/table-page.components.abstract';
 
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
-    styleUrls: ['./home.component.css'],
-    providers: [MessageService, CommentsService]
+    providers: [DialogService, CommentsService]
 })
-export class HomeComponent extends PageTableAbstractComponent<Comment> {
+export class HomeComponent extends AppTablePageAbstractComponent<Comment> implements OnInit, OnDestroy {
 
-    static title = 'COMMENTS';
-    queryOptions: QueryOptions = new QueryOptions('id', 'desc', 1, 10, 0, 0);
-
-    tableFields = [
-        {
-            name: 'id',
-            sortName: 'id',
-            title: 'ID',
-            outputType: 'text',
-            outputProperties: {}
-        },
-        {
-            name: 'vote',
-            sortName: 'vote',
-            title: 'VOTE',
-            outputType: 'text',
-            outputProperties: {}
-        },
-        {
-            name: 'status',
-            sortName: 'status',
-            title: 'STATUS',
-            outputType: 'text',
-            outputProperties: {}
-        },
-        {
-            name: 'createdTime',
-            sortName: 'createdTime',
-            title: 'CREATED_TIME',
-            outputType: 'date',
-            outputProperties: {
-                format: 'dd/MM/y H:mm:s'
-            }
-        },
-        {
-            name: 'publishedTime',
-            sortName: 'publishedTime',
-            title: 'PUBLISHED_TIME',
-            outputType: 'date',
-            outputProperties: {
-                format: 'dd/MM/y H:mm:s'
-            }
-        },
-        {
-            name: 'isActive',
-            sortName: 'status',
-            title: 'STATUS',
-            outputType: 'boolean',
-            outputProperties: {}
-        }
+    queryOptions: QueryOptions = new QueryOptions(1, 12, 'id', 'desc');
+    items: Comment[] = [];
+    cols: TableField[] = [
+        { field: 'id', header: 'ID', outputType: 'text-center', outputProperties: {} },
+        { field: 'vote', header: 'VOTE', outputType: 'text', outputProperties: {} },
+        { field: 'status', header: 'STATUS', outputType: 'text', outputProperties: {} },
+        { field: 'createdDate', header: 'CREATED_TIME', outputType: 'date', outputProperties: {format: 'dd/MM/y HH:mm:ss'} },
+        { field: 'publishedTime', header: 'PUBLISHED_TIME', outputType: 'date', outputProperties: {format: 'dd/MM/y HH:mm:ss'} },
+        { field: 'isActive', header: 'STATUS', outputType: 'boolean', outputProperties: {} }
     ];
 
     constructor(
+        public dialogService: DialogService,
+        public contentTypesService: ContentTypesService,
         public dataService: CommentsService,
-        public activeModal: NgbActiveModal,
-        public modalService: NgbModal,
-        public translateService: TranslateService
+        public translateService: TranslateService,
+        public messageService: MessageService,
+        public confirmationService: ConfirmationService
     ) {
-        super(dataService, activeModal, modalService, translateService);
+        super(dialogService, contentTypesService, dataService, translateService, messageService, confirmationService);
     }
 
-    getModalContent() {
+    ngOnInit() {
+        super.ngOnInit();
+        this.menuItems.push({
+            label: this.getLangString('DISABLE_ENABLE'),
+            icon: 'pi pi-times-circle',
+            command: () => {
+                this.blockSelected();
+            }
+        });
+    }
+
+    getModalComponent() {
         return ModalCommentComponent;
-    }
-
-    getModalElementId(itemId?: number): string {
-        return ['modal', 'comment', itemId || 0].join('-');
-    }
-
-    setModalInputs(itemId?: number, isItemCopy: boolean = false, modalId = ''): void {
-        super.setModalInputs(itemId, isItemCopy, modalId);
-
-        const isEditMode = typeof itemId !== 'undefined' && !isItemCopy;
-        this.modalRef.componentInstance.modalTitle = isEditMode
-            ? `${this.getLangString('COMMENT')} #${itemId}`
-            : this.getLangString('ADD_COMMENT');
     }
 }

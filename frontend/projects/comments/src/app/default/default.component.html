@@ -1,19 +1,15 @@
-<div class="card">
-    <div class="card-body">
+<div class="layout-topbar justify-content-between">
+    <button type="button" class="menu-button" (click)="navBarToggle()">
+        <i class="pi pi-bars"></i>
+    </button>
+    <span class="layout-topbar-header text-3xl text-600">
+        <i class="fi fi-br-cube vertical-align-middle mr-3"></i>
+        <span class="vertical-align-middle">{{ 'COMMENTS' | translate }}</span>
+    </span>
+</div>
 
-        <div class="float-md-start mt-4 mt-md-0">
-            <h3>
-                <i class="icon-message-circle"></i>
-                {{'COMMENTS' | translate}}
-            </h3>
-        </div>
-
-        <div class="clearfix"></div>
-        <hr>
-
-        <div class="min-height400">
-            <ng-content></ng-content>
-        </div>
-
+<div class="layout-content">
+    <div class="content-section min-height400 bg-white">
+        <ng-content></ng-content>
     </div>
 </div>
