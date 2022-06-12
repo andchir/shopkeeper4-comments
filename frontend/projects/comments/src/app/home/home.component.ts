@@ -25,7 +25,6 @@ export class HomeComponent extends AppTablePageAbstractComponent<Comment> implem
         { field: 'id', header: 'ID', outputType: 'text-center', outputProperties: {} },
         { field: 'vote', header: 'VOTE', outputType: 'text', outputProperties: {} },
         { field: 'status', header: 'STATUS', outputType: 'text', outputProperties: {} },
-        { field: 'createdDate', header: 'CREATED_TIME', outputType: 'date', outputProperties: {format: 'dd/MM/y HH:mm:ss'} },
         { field: 'publishedTime', header: 'PUBLISHED_TIME', outputType: 'date', outputProperties: {format: 'dd/MM/y HH:mm:ss'} },
         { field: 'isActive', header: 'STATUS', outputType: 'boolean', outputProperties: {} }
     ];

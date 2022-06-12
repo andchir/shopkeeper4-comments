@@ -73,6 +73,7 @@ if (class_exists('\App\Controller\Admin\StorageControllerAbstract')) {
                 $item = $this->commentsManager->createComment();
                 $item->setAuthor($this->getUser());
             }
+            $isActive = $item->getIsActive();
 
             $item
                 ->setStatus($data['status'])
@@ -80,6 +81,10 @@ if (class_exists('\App\Controller\Admin\StorageControllerAbstract')) {
                 ->setVote($data['vote'])
                 ->setComment($data['comment'])
                 ->setReply($data['reply']);
+
+            if ($item->getIsActive() && $isActive !== $item->getIsActive()) {
+                $item->setPublishedTime(new \DateTime());
+            }
 
             if (!$item->getId()) {
                 $this->dm->persist($item);

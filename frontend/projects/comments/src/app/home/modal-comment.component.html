@@ -1,13 +1,33 @@
 <div>
     <form [formGroup]="form" #formEl>
 
-        <div class="grid align-content-start mb-3 mt-0 border-round border-1 surface-200 border-400" *ngIf="model.author">
-            <div class="col-6">
-                {{ 'AUTHOR' | translate }}:
-            </div>
-            <div class="col-6">
-                <i class="pi pi-user mr-2"></i>
-                <a href="{{ baseUrl }}admin/#/users/{{ model.author.email }}">{{ model.author.email }}</a>
+        <div class="px-3 pt-2 mb-3 mt-0 border-round border-1 surface-200 border-400" *ngIf="model.author">
+            <div>
+                <div class="grid">
+                    <div class="col-6">
+                        {{ 'AUTHOR' | translate }}:
+                    </div>
+                    <div class="col-6">
+                        <i class="pi pi-user mr-2"></i>
+                        <a href="{{ baseUrl }}admin/#/users/{{ model.author.email }}">{{ model.author.email }}</a>
+                    </div>
+                </div>
+                <div class="grid">
+                    <div class="col-6">
+                        {{ 'CREATED_TIME' | translate }}:
+                    </div>
+                    <div class="col-6">
+                        {{ model.createdTime | date: 'dd.MM.yy HH:mm:ss' }}
+                    </div>
+                </div>
+                <div class="grid">
+                    <div class="col-6">
+                        {{ 'PUBLISHED_TIME' | translate }}:
+                    </div>
+                    <div class="col-6">
+                        {{ model.publishedTime | date: 'dd.MM.yy HH:mm:ss' }}
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -34,7 +54,7 @@
                 <label class="block mb-2" for="fieldStatus">
                     {{ 'STATUS' | translate }}
                 </label>
-                <p-dropdown styleClass="w-full"
+                <p-dropdown inputId="fieldStatus" styleClass="w-full"
                         [options]="statusesOpts"
                         optionLabel="title"
                         optionValue="name"
@@ -82,7 +102,7 @@
             <div class="col-12 md:col-3">
                 <button pButton pRipple type="button" [label]="'CLOSE' | translate"
                         class="p-button-secondary p-button-raised w-full"
-                        (click)="dismissModal($event)"></button>
+                        (click)="closeModal($event)"></button>
             </div>
         </div>
     </form>

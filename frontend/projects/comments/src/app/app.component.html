@@ -3,6 +3,7 @@
     <router-outlet></router-outlet>
 
     <app-navbar
+            [hrefMode]="true"
             [baseRoute]="'/module/comments'"
             (fileManagerActive)="fileManagerToggle($event)"></app-navbar>
 
