@@ -23,6 +23,8 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('comment_class')->end()
                 ->scalarNode('status_default')->end()
+                ->scalarNode('template_comments')->end()
+                ->scalarNode('template_add_comment_form')->end()
             ->end();
 
         return $treeBuilder;

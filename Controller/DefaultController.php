@@ -56,7 +56,7 @@ class DefaultController extends AbstractController
 
         $currentUrl = $request->get('currentUrl', '');
 
-        return $this->render('@Comments/Default/comments.html.twig', [
+        return $this->render($this->commentsManager->getOptionValue('template_comments'), [
             'form' => $form->createView(),
             'comments' => $comments,
             'currentUrl' => $currentUrl
@@ -112,7 +112,7 @@ class DefaultController extends AbstractController
                     'success' => true,
                     'result' => $comment,
                     'form' => $statusDefault == CommentInterface::STATUS_PENDING
-                        ? $this->renderView('@Comments/Default/add_comment_form.html.twig', [
+                        ? $this->renderView($this->commentsManager->getOptionValue('template_add_comment_form'), [
                             'form' => $this->createForm(AddCommentType::class, $this->commentsManager->createComment($comment->getThreadId()))->createView()
                         ]) : ''
                 ], 200, [], [
@@ -127,7 +127,7 @@ class DefaultController extends AbstractController
             return $this->setError([
                 'success' => false,
                 'error' => (string) $form->getErrors(true, false),
-                'form' => $this->renderView('@Comments/Default/add_comment_form.html.twig', [
+                'form' => $this->renderView($this->commentsManager->getOptionValue('template_add_comment_form'), [
                     'form' => $form->createView()
                 ])
             ]);
