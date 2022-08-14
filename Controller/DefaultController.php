@@ -64,6 +64,24 @@ class DefaultController extends AbstractController
     }
 
     /**
+     * @Route("/form/{threadId}", name="comments_form", methods={"GET"})
+     * @param Request $request
+     * @param string $threadId
+     * @return Response
+     */
+    public function getFormAction(Request $request, $threadId)
+    {
+        /** @var CommentInterface $comment */
+        $comment = $this->commentsManager->createComment($threadId);
+        $form = $this->createForm(AddCommentType::class, $comment);
+        $currentUrl = $request->get('currentUrl', '');
+        return $this->render($this->commentsManager->getOptionValue('template_add_comment_form'), [
+            'form' => $form->createView(),
+            'currentUrl' => $currentUrl
+        ]);
+    }
+
+    /**
      * @Route("/add", name="comment_add", methods={"POST"})
      * @param Request $request
      * @param TranslatorInterface $translator
@@ -72,6 +90,7 @@ class DefaultController extends AbstractController
      */
     public function addCommentAction(Request $request, TranslatorInterface $translator, EventDispatcherInterface $eventDispatcher)
     {
+        $includeForm = $request->get('includeForm', true);
         $statusDefault = $this->commentsManager->getOptionValue('status_default');
         $referer = $request->headers->get('referer');
         /** @var CommentInterface $comment */
@@ -111,7 +130,7 @@ class DefaultController extends AbstractController
                 return $this->json([
                     'success' => true,
                     'result' => $comment,
-                    'form' => $statusDefault == CommentInterface::STATUS_PENDING
+                    'form' => $includeForm && $statusDefault == CommentInterface::STATUS_PENDING
                         ? $this->renderView($this->commentsManager->getOptionValue('template_add_comment_form'), [
                             'form' => $this->createForm(AddCommentType::class, $this->commentsManager->createComment($comment->getThreadId()))->createView()
                         ]) : ''
@@ -127,9 +146,11 @@ class DefaultController extends AbstractController
             return $this->setError([
                 'success' => false,
                 'error' => (string) $form->getErrors(true, false),
-                'form' => $this->renderView($this->commentsManager->getOptionValue('template_add_comment_form'), [
-                    'form' => $form->createView()
-                ])
+                'form' => $includeForm ?
+                    $this->renderView($this->commentsManager->getOptionValue('template_add_comment_form'), [
+                        'form' => $form->createView()
+                    ])
+                    : ''
             ]);
         } else {
             return $this->redirect($referer);

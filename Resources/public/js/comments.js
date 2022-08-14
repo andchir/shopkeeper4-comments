@@ -1,6 +1,6 @@
 /**
  * ShkComments
- * @version 1.0.0
+ * @version 1.0.1
  * @author Andchir<andchir@gmail.com>
  */
 
@@ -40,6 +40,7 @@
             currentUrl: '',
             threadId: 0,
             selector: '#shk-comments',
+            formContainerSelector: '',
             loadingClass: 'loading',
             replyFormContainerSelector: '.comment-reply-form-container',
             replyContainerSelector: '.comment-reply-container',
@@ -69,6 +70,9 @@
                 return;
             }
             this.getThreadHtml();
+            if (mainOptions.formContainerSelector) {
+                this.getFormHtml();
+            }
             isInitialized = true;
         };
 
@@ -81,7 +85,9 @@
             const url = mainOptions.baseUrl + '/' + mainOptions.threadId;
             this.ajax(url, {currentUrl: mainOptions.currentUrl}, function(res) {
                 container.innerHTML = res;
-                self.formSubmitInit();
+                if (!mainOptions.formContainerSelector) {
+                    self.formSubmitInit();
+                }
                 self.commentsActionInit();
                 self.showLoading(false);
                 if (typeof callbackFunc === 'function') {
@@ -89,6 +95,21 @@
                 }
             }, function() {
                 self.showLoading(false);
+            });
+        };
+
+        /**
+         * Get form HTML
+         */
+        this.getFormHtml = function() {
+            const formContainer = document.querySelector(mainOptions.formContainerSelector);
+            if (!formContainer) {
+                return;
+            }
+            const url = mainOptions.baseUrl + '/form/' + mainOptions.threadId;
+            this.ajax(url, {currentUrl: mainOptions.currentUrl}, function(res) {
+                formContainer.innerHTML = res;
+                self.formSubmitInit();
             });
         };
 
@@ -103,11 +124,16 @@
         /**
          * Form submit initialize
          */
-        this.formSubmitInit = function() {
+        this.formSubmitInit = function(formEl) {
             if (!container) {
                 return;
             }
-            const formEl = container.querySelector('form');
+            const formContainer = mainOptions.formContainerSelector
+                ? document.querySelector(mainOptions.formContainerSelector)
+                : container;
+            if (!formEl) {
+                formEl = formContainer.querySelector('form');
+            }
             if (!formEl) {
                 return;
             }
@@ -180,11 +206,14 @@
         this.onFormSubmit = function(e) {
             e.preventDefault();
 
-            const url = mainOptions.baseUrl + '/add';
+            let url = mainOptions.baseUrl + '/add';
             const formData = new FormData(e.target);
             const buttonEl = container.querySelector('button[type="submit"]');
             if (buttonEl) {
                 buttonEl.disabled = true;
+            }
+            if (mainOptions.formContainerSelector) {
+                url += '?includeForm=0'
             }
 
             self.showLoading(true);
