@@ -71,8 +71,8 @@ Andchir\CommentsBundle\CommentsBundle::class => ['all' => true]
 
 Create symlink:
 ~~~
-ln -s /path/to/vendor/andchir/shopkeeper4-comments/frontend/projects/comments \
-/path/to/frontend/projects/comments
+ln -s /path/to/vendor/andchir/shopkeeper4-comments/frontend/projects/comments/src/app \
+/path/to/frontend/projects/admin2/src/app/comments
 ~~~
 
 Build for development mode:
